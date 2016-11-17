@@ -9,7 +9,7 @@
 
 #define TILE_SIZE 16
 
-#define TACD_DIRECTORY "Y:/TACD C++/"
+
 
 //#define TACD_DIRECTORY "C:\Users\Lee-Stenio Nazer\Panel de Pon\TACD C++"
 

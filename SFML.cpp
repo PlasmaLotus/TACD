@@ -1,4 +1,5 @@
 #include "SFML.h"
+#include "GeneralEnum.h"
 
 int SFML_Window()
 {
@@ -24,21 +25,21 @@ int SFML_Window()
 int SFML_TestWindow()
 {
 
-
-	sf::RenderWindow window(sf::VideoMode(800, 600), "SFML! Y U NO DRAW BLOCK!!");
+	sf::RenderWindow window;
+	window.create(sf::VideoMode(800, 600), "SFML! Y U NO DRAW BLOCK!!");
 
 	std::string blockTexturePath = TACD_DIRECTORY;
-	blockTexturePath += "TetrisAttackBeta.png";
+	blockTexturePath += "IMG Files/blocks.png";
 
-	std::string boardOutlinePath = TACD_DIRECTORY;
-	boardOutlinePath += "1p.png";
+	//std::string boardOutlinePath = TACD_DIRECTORY;
+	//boardOutlinePath += "1p.png";
 
 	sf::Texture blockTexture;
 	blockTexture.setRepeated(true);
 
-	sf::Texture boardOutlineTexture;
-	sf::Sprite boardOutline;
-	boardOutline.setTexture(boardOutlineTexture);
+	//sf::Texture boardOutlineTexture;
+	//sf::Sprite boardOutline;
+	//boardOutline.setTexture(boardOutlineTexture);
 
 	sf::Sprite sprite_block1;
 	sf::Sprite betaSprite;
@@ -55,7 +56,7 @@ int SFML_TestWindow()
 		printf("%s\n", "Evreything seems good : Texture Success");
 		sprite_block1.setTexture(blockTexture);
 		//sprite_block1.
-		sprite_block1.setTextureRect(sf::IntRect(322+TILE_SIZE *2, 166, TILE_SIZE, TILE_SIZE));
+		//sprite_block1.setTextureRect(sf::IntRect(322+TILE_SIZE *2, 166, TILE_SIZE, TILE_SIZE));
 		//sprite_block1.scale(sf::Vector2f(3.f, 3.f)); // factor relative to the current scale
 	}
 

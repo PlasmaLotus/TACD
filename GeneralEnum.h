@@ -7,6 +7,9 @@ Updated Nov 7, 2016
 #define _GeneralBoardEnum_
 
 #define FPS 60
+#define TACD_DIRECTORY "Y:/TACD C++/"
+//define TACD_DIRECTORY "C:/Users/Lee-Stenio Nazer/panel pop/TACD C++/IMG Files/"
+
 
 enum BlockType { block, air, garbage };
 enum BlockState { clearing, matching, cleared, swapping, floating, falling, landed, nothing, normal };

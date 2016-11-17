@@ -1,23 +1,39 @@
-#pragma once
 
-
-#include <SDL.h>
+#include "SFML.h"
+#include "Board.h"
 
 #ifndef _Game_
 #define _Game_
 
-int SDL_Game();
+class Game{
+	
+public:
 
-//Starts up SDL and creates window
-bool init();
+	Board b1;
+	Board b2;
+	sf::RenderWindow window;
+	//sf::RenderWindow window(sf::VideoMode(800, 600), "Why doesnt the block draw");
 
-//Loads media
-bool loadMedia();
+Game();
+~Game();
 
-//Frees media and shuts down SDL
-void close();
+void init();
+
+int test2();
+
+int test();
+
+void run();
 
 
+private:
+
+	void draw();
+	void display();
+	int SCREEN_WIDTH = 640;
+	int SCREEN_HEIGHT = 480;
+
+};
 
 #endif // !_Game_
 

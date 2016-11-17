@@ -1,107 +1,151 @@
-#include <stdlib.h>
-#include <stdio.h>
 #include "Game.h"
-#include <SDL.h>
+#include "GeneralEnum.h"
+#include "Main.h"
 
-//The window we'll be rendering to
-SDL_Window* gWindow = NULL;
+Game::Game(){
+	//window.create(sf::VideoMode(800, 600), "SFML! Y U NO DRAW BLOCK!!");
+}
 
-//The surface contained by the window
-SDL_Surface* gScreenSurface = NULL;
+Game::~Game(){
+	window.close();
+}
 
-//The image we will load and show on the screen
-SDL_Surface* gHelloWorld = NULL;
-
-int SCREEN_WIDTH = 640;
-int SCREEN_HEIGHT = 480;
-
-bool init()
+void Game::init()
 {
-	//Initialization flag
-	bool success = true;
+	window.create(sf::VideoMode(800, 600), "Why doesnt the block draw");
+}
 
-	//Initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+int Game::test2() {
+
+	std::string blockTexturePath = TACD_DIRECTORY;
+	blockTexturePath += "IMG Files/blocks.png";
+
+	//std::string boardOutlinePath = TACD_DIRECTORY;
+	//boardOutlinePath += "1p.png";
+
+	sf::Texture blockTexture;
+	blockTexture.setRepeated(true);
+
+	//sf::Texture boardOutlineTexture;
+	//sf::Sprite boardOutline;
+	//boardOutline.setTexture(boardOutlineTexture);
+
+	sf::Sprite sprite_block1;
+	sf::Sprite betaSprite;
+	betaSprite.setTexture(blockTexture, true);
+
+	if (!blockTexture.loadFromFile(blockTexturePath))
 	{
-		printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-		success = false;
+		// error...
+		printf("%s\n", "What have I done : Texture Failure");
+		return -1;
 	}
 	else
 	{
-		//Create window
-		gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-		if (gWindow == NULL)
-		{
-			printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-			success = false;
-		}
-		else
-		{
-			//Get window surface
-			gScreenSurface = SDL_GetWindowSurface(gWindow);
-		}
+		printf("%s\n", "Evreything seems good : Texture Success2");
+		sprite_block1.setTexture(blockTexture);
+		//sprite_block1.setTextureRect(sf::IntRect(322+TILE_SIZE *2, 166, TILE_SIZE, TILE_SIZE));
+		//sprite_block1.scale(sf::Vector2f(3.f, 3.f)); // factor relative to the current scale
 	}
 
-	return success;
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+		}
+
+		window.clear();
+
+		// inside the main loop, between window.clear() and window.display()
+		//window.draw(sprite_block1);
+		window.draw(sprite_block1);
+		//sprite_block1.move(TILE_SIZE, 0);
+		//window.draw(sprite_block1);
+
+
+		//sprite_block1.scale(sf::Vector2f(1.5f, 3.f)); // factor relative to the current scale
+		window.display();
+	}
+
+	return 0;
 }
 
-bool loadMedia()
+void Game::run() {
+
+	//Board b1;
+	//Board b2;
+
+	//Board board;
+	ControllerCommand input;
+	int frame = 0;
+	int second = 0;
+	int minute = 0;
+	int milisecond = 0;
+	int MS_PER_FRAME = 16;//miliseconds per frame
+						  //clock_t FPS = 60;
+	clock_t lastTime = clock();
+	clock_t current = clock();
+	clock_t elapsed = current - lastTime;
+	while (true)
+	{
+		/*Manage Time Beta*/
+		if (frame == 32767) {
+			frame = 0;
+		}
+		else {
+			frame++;
+			milisecond++;
+
+			if (milisecond >= 60)
+			{
+				second++;
+				milisecond = 0;
+			}
+
+			if (second >= 60)
+			{
+				minute++;
+				second = 0;
+			}
+		}
+
+		//processInput();
+
+		//current = clock();
+		//elapsed = current - lastTime;
+		current = clock();
+		input = ControllerCommand::noInput;
+		if (_kbhit())
+		{
+			b1.handleInput(getInput());
+		}
+
+		printf("%d:%d  Frame: %d\n", minute, second, frame);
+		printf("Average FPS: %3.2f        \nNB Frames: %3.2f     \nTemps: %d           \nClocks per Sec: %3.2f\n", CalcAverageTick((int)elapsed), (float)elapsed * 60, elapsed, (float)CLOCKS_PER_SEC);
+		b1.run();
+		b1.display();
+		//lastTime = current;
+		elapsed = clock() - current;
+
+		if (MS_PER_FRAME - elapsed > 0)
+		{
+			fflush(stdout);
+			Sleep(MS_PER_FRAME - elapsed);
+		}
+
+		//system("cmd /c cls");
+		gotoxy(0, 0);
+	}
+
+}
+
+void Game::draw()
 {
-	//Loading success flag
-	bool success = true;
-
-	//Load splash image
-	gHelloWorld = SDL_LoadBMP("02_getting_an_image_on_the_screen/hello_world.bmp");
-	if (gHelloWorld == NULL)
-	{
-		printf("Unable to load image %s! SDL Error: %s\n", "02_getting_an_image_on_the_screen/hello_world.bmp", SDL_GetError());
-		success = false;
-	}
-
-	return success;
 }
 
-void close()
+void Game::display()
 {
-	//Deallocate surface
-	SDL_FreeSurface(gHelloWorld);
-	gHelloWorld = NULL;
-
-	//Destroy window
-	SDL_DestroyWindow(gWindow);
-	gWindow = NULL;
-
-	//Quit SDL subsystems
-	SDL_Quit();
-}
-
-int SDL_Game() {
-	
-	//Start up SDL and create window
-	if (!init())
-	{
-		printf("Failed to initialize!\n");
-	}
-	else
-	{
-		//Load media
-		if (!loadMedia())
-		{
-			printf("Failed to load media!\n");
-		}
-		else
-		{
-			//Apply the image
-			SDL_BlitSurface(gHelloWorld, NULL, gScreenSurface, NULL);
-			//Update the surface
-			SDL_UpdateWindowSurface(gWindow);
-			            //Wait two seconds
-            SDL_Delay( 2000 );
-        }
-    }
-
-    //Free resources and close SDL
-    close();
-
-    return 0;
 }

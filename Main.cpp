@@ -1,19 +1,10 @@
 /*
 Created by PlasmaLotus
-Updated Nov 7, 2016
+Updated Nov 17, 2016
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-#include <iomanip>
-#include <conio.h>
-#include <time.h>//clock()
-#include <Windows.h>//sleep
-//#include <SDL.h>
-//#include "Game.h"
-//#include "Main.h"
-
+#include "Main.h"
+#include "Game.h"
 #include "Block.h"
 #include "Board.h"
 #include "Tile.h"
@@ -96,67 +87,7 @@ ControllerCommand getInput() {
 
 int gameLoop(void) {
 
-	Board board;
-	ControllerCommand input;
-	int frame = 0;
-	int second = 0;
-	int minute = 0;
-	int milisecond = 0;
-	int MS_PER_FRAME = 16;//miliseconds per frame
-						  //clock_t FPS = 60;
-	clock_t lastTime = clock();
-	clock_t current = clock();
-	clock_t elapsed = current - lastTime;
-	while (true)
-	{
-		/*Manage Time Beta*/
-		if (frame == 32767) {
-			frame = 0;
-		}
-		else {
-			frame++;
-			milisecond++;
-
-			if (milisecond >= 60)
-			{
-				second++;
-				milisecond = 0;
-			}
-
-			if (second >= 60)
-			{
-				minute++;
-				second = 0;
-			}
-		}
-
-		//processInput();
-
-		//current = clock();
-		//elapsed = current - lastTime;
-		current = clock();
-		input = ControllerCommand::noInput;
-		if (_kbhit())
-		{
-			board.handleInput(getInput());
-		}
-
-		printf("%d:%d  Frame: %d\n", minute, second, frame);
-		printf("Average FPS: %3.2f        \nNB Frames: %3.2f     \nTemps: %d           \nClocks per Sec: %3.2f\n", CalcAverageTick((int)elapsed), (float)elapsed * 60, elapsed, (float)CLOCKS_PER_SEC);
-		board.run();
-		board.display();
-		//lastTime = current;
-		elapsed = clock() - current;
-
-		if (MS_PER_FRAME - elapsed > 0)
-		{
-			fflush(stdout);
-			Sleep(MS_PER_FRAME - elapsed);
-		}
-
-		//system("cmd /c cls");
-		gotoxy(0, 0);
-	}
+	//moved to Game class
 
 	/*
 	double lastTime = getCurrentTime();
@@ -170,6 +101,7 @@ int gameLoop(void) {
 	lastTime = current;
 	}
 	*/
+	return 0;
 }
 
 
@@ -196,9 +128,16 @@ int main(int argc, char *argv[]) {
 
 	//SFML_Window();
 	//SFML_Texture();
-	SFML_TestWindow();
+
+	//SFML_TestWindow();
+	Game game;
+	game.init();
+	//game.test();
+	game.test2();
+
 	//SpriteTest();
 	//gameLoop();
+	_getch();
 	return 0;
 }
 
