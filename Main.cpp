@@ -133,11 +133,11 @@ int main(int argc, char *argv[]) {
 	Game game;
 	game.init();
 	//game.test();
-	game.test2();
+	game.run();
 
 	//SpriteTest();
 	//gameLoop();
-	_getch();
+	//_getch();
 	return 0;
 }
 

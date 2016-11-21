@@ -24,7 +24,7 @@ bufferRowOffset(0),
 chain(false),
 combo(false),
 _activeBlocks(false),
-cursor({ 5,2 }) {
+cursor({ 4,2 }) {
 	std::srand(time(NULL));
 	initBoardRandom();
 	//init_Board(120);
@@ -275,7 +275,7 @@ void Board::initBoardRandom(){
 
 
 	/*Loop until no matches*/
-	while(checkMatch() && checkMatchbufferRow())
+	while(checkAllMatches())
 	{
 		for (int i = 0; i < randomBoardHandler.rowInitHeight; i++)
 		{
@@ -494,7 +494,7 @@ bool Board::_checkMatch(int row, int column, int row2, int column2)
 }
 
 bool Board::checkMatch(void) {
-
+	//returns true if a match has been made
 	bool match = false;
 	for (int i = 0; i < boardHeight; i++)
 	{
@@ -549,8 +549,6 @@ bool Board::checkMatch(void) {
 		
 	}
 	return match;
-
-
 }
 
 bool Board::BetacheckMatch(void) {
@@ -671,10 +669,10 @@ bool Board::checkMatchbufferRow(void) {
 }
 
 bool Board::checkAllMatches(void) {
-	bool match;
-	match = checkMatch();
-	match = checkMatchbufferRow();
-	return match;
+	bool matchBoard, matchStack;
+	matchBoard = checkMatch();
+	matchStack = checkMatchbufferRow();
+	return (matchBoard || matchStack);
 
 }
 

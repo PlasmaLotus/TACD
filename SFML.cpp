@@ -177,7 +177,7 @@ sf::Sprite SFML_Texture() {
 	sf::Sprite sprite_block5;
 
 
-	sprite_block1.setTextureRect(sf::IntRect(166, 322, TILE_SIZE, TILE_SIZE));
+	sprite_block1.setTextureRect(sf::IntRect(166, 322, 16, 16));
 	return sprite_block1;
 
 	/*

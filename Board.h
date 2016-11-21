@@ -16,8 +16,9 @@ Updated Nov 7, 2016
 class Board {
 
 public:
-	static const int BOARD_HEIGHT = 12;
+	static const int BOARD_HEIGHT = 11;
 	static const int BOARD_WIDTH = 6;
+	static const int TOP_ROW = BOARD_HEIGHT - 1;
 	//static const BoardDimension = _2D;
 	
 	Tile tiles[BOARD_HEIGHT][BOARD_WIDTH];
@@ -34,6 +35,7 @@ public:
 	int boardHeight;
 	int boardSize;
 	int boardWidth;
+	char bufferRowOffset;
 
 	bool chain;
 	bool combo;
@@ -47,17 +49,11 @@ public:
 	void displaybufferRow();
 	BlockColor randomColor(void);
 	BlockColor randomColor(int nbColor);
-
 	void init_Board(int nbBlocks);
-
 	void initBoardRandom();
-
 	void bufferRowNewbufferRow();
-
 	//void satckNewbufferRow();
-
 	//void initBoardRandom(int[][2]);
-
 	bool swappable(int row, int col);
 
 	bool swapBlock();
@@ -95,6 +91,7 @@ public:
 	void run();
 
 
+
 private:
 
 	RandomBoardGenerator randomBoardHandler;
@@ -103,7 +100,7 @@ private:
 	//int boardLevel = 5;
 	static const char bufferRowOffsetTotal = 16;
 	char bufferRowTics;
-	char bufferRowOffset;
+	//char bufferRowOffset;
 	int bufferRowTotalTics = FPS * 5;
 		//6 secs on SHard stage 1
 		//2.45 /sec on SHard
@@ -143,7 +140,7 @@ private:
 	char textbufferRow[BOARD_WIDTH];
 	char textBoard[BOARD_HEIGHT][BOARD_WIDTH];
 
-	static const int TOP_ROW = BOARD_HEIGHT - 1;
+	
 
 	static const char BlockExplosionTics = 4;
 	static const char BlockClearingBlink = 28;//on hard 1 speed

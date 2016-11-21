@@ -7,14 +7,14 @@ Updated Nov 7, 2016
 #define _GeneralBoardEnum_
 
 #define FPS 60
-#define TACD_DIRECTORY "Y:/TACD C++/"
-//define TACD_DIRECTORY "C:/Users/Lee-Stenio Nazer/panel pop/TACD C++/IMG Files/"
+//#define TACD_DIRECTORY "Y:/TACD C++/"
+#define TACD_DIRECTORY "C:/Users/Lee-Stenio/Panel Pop/TACD C++/"
 
 
 enum BlockType { block, air, garbage };
 enum BlockState { clearing, matching, cleared, swapping, floating, falling, landed, nothing, normal };
 enum BlockExtraState { swappingLeft, swappingRight, fallingMidRow, swappingMid, extraNormal, fromClear};
-enum BlockColor { red, yellow, green, blue, orange, purple, none };
+enum BlockColor { red, yellow, green, blue, orange, purple, none, pink };
 enum BlockExtraColor { ex, null };
 enum BoardState { score, vs, singlePlayer, multiPlayer };
 enum BoardDimension { _2D, _3D };

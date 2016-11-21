@@ -7,7 +7,7 @@
 #include <string>
 #include <iostream>
 
-#define TILE_SIZE 16
+
 
 
 
