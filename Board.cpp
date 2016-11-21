@@ -35,7 +35,6 @@ Board::~Board(){
 
 /*
 Board::Board() {
-
 	if (dimension.equals(BoardDimension._2D))
 	{
 		this.boardSize = board2DSize;
@@ -58,14 +57,12 @@ Board::Board() {
 			tiles[i][j].block.Block();
 		}
 	}
-
 	for (int j = 0; j < boardSize; j++)
 	{
 		_bufferRow[j] = new Tile(BlockType.empty);
 		_bufferRow[j].setTile(j, -1);
 		//_bufferRow[j].block = new Block(BlockState.normal);
 	}
-
 }
 */
 void Board::display() {
@@ -76,17 +73,12 @@ void Board::display() {
 }
 void Board::displayBoard()
 {
-	//bool lul;
-	//char cursor1 = '\201', cursor2 = '\203', cursor3 = '\187', cursor4 = '\200', cursor5 = '\202', cursor6 = '\188';
-
 	for (int i = 0; i < boardHeight; i++)
 	{
 		for (int j = 0; j < boardWidth; j++)
 		{
-
 			if (tiles[i][j].block.matching)
 			{
-
 				switch (tiles[i][j].block.getColor())
 				{
 				case red: textBoard[i][j] = 'R'; break;
@@ -111,10 +103,8 @@ void Board::displayBoard()
 				default: textBoard[i][j] = '_'; break;
 				}
 			}
-
 		}
 	}
-
 	//int cursorLocation2 = -1;
 	//prints it backwards 
 	printf("Board:\n Size: %d\n ", sizeof(Board));
@@ -122,7 +112,6 @@ void Board::displayBoard()
 	//for (int i = 0; i < boardHeight; i++)
 	for (int i = BOARD_HEIGHT - 1; i >= 0;i--)
 	{
-		
 		for (int j = 0; j < boardWidth; j++)
 		{
 			//printf(" ");
@@ -142,12 +131,10 @@ void Board::displayBoard()
 				else
 				printf(", ");
 			}
-
 		}
 		printf("\n ");
 	}
 	//return textBoard;
-	
 }
 void Board::displaybufferRow()
 {
@@ -188,7 +175,6 @@ void Board::displaybufferRow()
 			{
 				printf(", ");
 			}
-
 		}
 		//printf("\n");
 		printf("  bufferRow Raise Amount = %d / 16", bufferRowOffset);
@@ -347,7 +333,6 @@ bool Board::swapBlock() {
 	//cannot swap garbage blocks, matched blocks, falling blocks (unless they are on the right frame....), other swapping blocks
 	if (swappable(cursor.row, cursor.column) && swappable(cursor.row, cursor.column+ 1))
 	{
-
 		if (tiles[cursor.row][cursor.column].isAir() && tiles[cursor.row][cursor.column + 1].isAir())
 		{
 			return false;
@@ -372,7 +357,6 @@ bool Board::swapBlock() {
 					break;
 				}
 			}
-
 		}
 		else if (tiles[cursor.row][cursor.column + 1].isAir())
 		{
@@ -393,7 +377,6 @@ bool Board::swapBlock() {
 					break;
 				}
 			}
-
 		}
 		//actual block swapping
 		_swapBlocks(cursor.row, cursor.column, cursor.row, cursor.column + 1);
@@ -468,7 +451,30 @@ bool Board::moveCursor(ControllerCommand d) {
 	}
 }
 bool Board::handleInput(ControllerCommand input) {
-	return moveCursor(input);
+	switch(input)
+	{
+		case ControllerCommand::Up:
+		case ControllerCommand::Down:
+		case ControllerCommand::Left:
+		case ControllerCommand::Right:
+		{
+			return moveCursor(input);
+		}
+		case ControllerCommand::Swap:
+			{
+				//swap blocks
+				break;
+			}
+		case ControllerCommand::ForceRaise:
+			{
+				//force Raise
+				break;
+			}
+		case ControllerCommand::noInput:
+		default: return false;
+	}
+	return false;
+	
 }
 bool Board::_checkMatch(int row, int column, int row2, int column2)
 {
@@ -896,7 +902,11 @@ void Board::tick() {
 */
 
 void Board::run() {
+}
+void Board::run(ControllerCommand input) {
 	//initTimers();
+	
+	handleInput(input);
 	handleBufferRow();
 	checkMatch();
 
