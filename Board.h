@@ -89,7 +89,7 @@ public:
 	void initTics();
 
 	void run();
-
+	void run(ControllerCommand input);
 
 
 private:
