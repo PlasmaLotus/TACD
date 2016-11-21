@@ -187,13 +187,42 @@ void Game::run() {
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
+			/*
 			if (event.type == sf::Event::Closed)
 			{
 				window.close();
 				//exit(EXIT_SUCCESS);
 			}
+			*/
+			switch(event.type)
+			{
+				case sf::Event::Closed: window.close(); break;	
+				case sf::Event::KeyPressed:
+					{
+						switch(event.key)
+						{
+							//list of keys
+							case sf::Keyboard::Up: input = ControllerCommand::Up; break;
+							case sf::Keyboard::Down: input = ControllerCommand::Down; break;
+							case sf::Keyboard::Left: input = ControllerCommand::Left; break;
+							case sf::Keyboard::Right: input = ControllerCommand::Right; break;
+							case sf::Keyboard::Z: input = ControllerCommand::a; break;
+							case sf::Keyboard::Escape: input = ControllerCommand::Cheat; break;
+							default: input = ControllerCommand::noInput; break;
+						}
+						break;
+					}
+				default: break;
+			}
+			/*
+			else if (event.type == sf::Event::KeyPressed)
+			{
+				switch
+			}
+			*/
 		}
 
+		
 		//blockSprites[1].setColor(sf::Color::Red);
 
 		window.clear();
@@ -216,7 +245,6 @@ void Game::run() {
 			fflush(stdout);
 			Sleep(MS_PER_FRAME - elapsed.asMilliseconds());
 		}
-
 		//system("cmd /c cls");
 		gotoxy(0, 0);
 	}
