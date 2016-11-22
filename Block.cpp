@@ -8,13 +8,15 @@ Updated Nov 7, 2016
 Block::~Block() {
 }
 
-Block::Block()
+Block::Block():
+color(BlockColor::none),
+state(BlockState::normal),
+stateExtra(BlockExtraState::extraNormal),
+//type = BlockType::air;
+matching(false),
+inChain(false)
 {
-	color = none;
-	state = BlockState::normal;
-	//type = BlockType::air;
-	matching = false;
-	inChain = false;
+
 }
 
 BlockColor Block::getColor()

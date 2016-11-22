@@ -66,20 +66,20 @@ ControllerCommand getInput() {
 
 			switch (char2)
 			{
-			case LEFT:	return ControllerCommand::left;
-			case RIGHT:	return ControllerCommand::right;
-			case UP:	return ControllerCommand::up;
-			case DOWN:	return ControllerCommand::down;
-			default:	return ControllerCommand::noInput;
+			case LEFT:	return ControllerCommand::Left;
+			case RIGHT:	return ControllerCommand::Right;
+			case UP:	return ControllerCommand::Up;
+			case DOWN:	return ControllerCommand::Down;
+			default:	return ControllerCommand::NoInput;
 			}
 		}
-		default: return ControllerCommand::noInput;
+		default: return ControllerCommand::NoInput;
 		}
 
 	}
 	else
 	{
-		return ControllerCommand::noInput;
+		return ControllerCommand::NoInput;
 	}
 	//fflush(stdin);
 

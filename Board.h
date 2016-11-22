@@ -16,7 +16,7 @@ Updated Nov 7, 2016
 class Board {
 
 public:
-	static const int BOARD_HEIGHT = 11;
+	static const int BOARD_HEIGHT = 12;
 	static const int BOARD_WIDTH = 6;
 	static const int TOP_ROW = BOARD_HEIGHT - 1;
 	//static const BoardDimension = _2D;
@@ -29,18 +29,26 @@ public:
 	struct Position {
 		int row, column;
 	};
-
 	Position cursor;
+
+	int topRowHold;
 
 	int boardHeight;
 	int boardSize;
 	int boardWidth;
 	char bufferRowOffset;
 
-	bool chain;
-	bool combo;
+	bool forceRaise;
+	bool isChain;
+	int chainCounter;
+	bool _combo;
+	bool _match;
+	bool _swap;
+
 	bool _activeBlocks;
 	bool _stop;
+	int stopTime;
+	int pauseTime;
 
 	Board();
 	~Board();
@@ -52,11 +60,9 @@ public:
 	void init_Board(int nbBlocks);
 	void initBoardRandom();
 	void bufferRowNewbufferRow();
-	//void satckNewbufferRow();
-	//void initBoardRandom(int[][2]);
 	bool swappable(int row, int col);
 
-	bool swapBlock();
+	bool swapBlocks();
 
 	bool moveCursor(ControllerCommand d);
 
@@ -64,6 +70,8 @@ public:
 
 	bool _checkMatch(int row, int column, int row2, int column2);
 	bool checkMatch(void);
+
+	bool BetacheckMatch2(void);
 
 	bool BetacheckMatch(void);
 	bool _checkMatchbufferRow(int column, int column2);
@@ -81,6 +89,16 @@ public:
 	void _swapBlocks(int row, int column, int row2, int column2);
 
 	void handleSwappingBlocks();
+
+	void handleMatchingBlocks();
+
+	void ClearingBlocksInitPop(int popTime);
+
+	void ClearingBlocksInitPopFinal(int popTimeFinal);
+
+	void handleClearingBlocks();
+
+	void setChainAbove(int row, int col, int chain);
 
 	//void handleBlocks();
 
@@ -121,7 +139,7 @@ private:
 	All input takes 2 frames to register, and they activage on the next frame
 	*/
 
-
+	char betaValue = 0;
 
 	/*There are 3 extra frames before falling from a match : Eazy mode*/
 	/*Thinking on setting everybody on floating - offset*/
@@ -139,8 +157,6 @@ private:
 	//int bufferRowRaiseSpeed = 2;
 	char textbufferRow[BOARD_WIDTH];
 	char textBoard[BOARD_HEIGHT][BOARD_WIDTH];
-
-	
 
 	static const char BlockExplosionTics = 4;
 	static const char BlockClearingBlink = 28;//on hard 1 speed

@@ -16,13 +16,19 @@ struct Tile {
 	BlockType type;
 	Block block;
 	//GarbageBlock* g;
-	static const char DEFAULT_COUNTER_VALUE = 254;
-
+	static const int DEFAULT_COUNTER_VALUE = 254;
+	static const int DEFAULT_POP_VALUE = 4096;
 	//char fallingCounter;
-	char swappingCounter;
-	char fallingBufferCounter;
-	char floatingCounter;
-	bool airLock;//should only prevent swapping
+	int swappingCounter;
+	int fallingBufferCounter;
+	int floatingCounter;
+	int matchingCounter;/*Also Knowned as FlashingCounter*/
+	//char flashingCounter;
+	//char clearingCounter;
+	int popCounter;
+	int popCounterFinal;
+	//bool airLock;//should only prevent swapping
+	int chainNumber;
 
 	Tile();
 	~Tile();
@@ -30,6 +36,7 @@ struct Tile {
 	bool isBlock();
 	bool isGarbage();
 	bool isAir();
+	bool isClear();
 };
 
 #endif

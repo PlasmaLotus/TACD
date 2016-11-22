@@ -7,13 +7,17 @@ Game::Game(){
 }
 
 Game::~Game(){
-	window.close();
+	//window.close();
+}
+
+void Game::reset() {
+	b1 = Board();
+	b2 = Board();
 }
 
 void Game::init()
 {
 	window.create(sf::VideoMode(800, 600), "TACD");
-
 
 	std::string blockTexturePath = TACD_DIRECTORY;
 	blockTexturePath += "IMG Files/blocksUpdated.png";
@@ -44,14 +48,6 @@ void Game::init()
 	{
 		printf("All Texture Loaded\n");
 		boardFrameSprite.setTexture(boardFrameTexture);
-		//blockSprite1.setTextureRect();
-		
-		for (int i = 0; i < NB_BLOCKS_SPRITES; i++)
-		{
-			blockSprites[i].setTexture(blockTexture);
-			blockSprites[i].setTextureRect(sf::IntRect(i*TILE_SIZE, 0, TILE_SIZE, TILE_SIZE));
-			//blockSprites[i].setTextureRect()
-		}
 
 		for (int i = 0; i < BOARD_HEIGHT; i++)
 		{
@@ -68,6 +64,7 @@ void Game::init()
 	}
 }
 
+/*
 int Game::test2() {
 
 	std::string blockTexturePath = TACD_DIRECTORY;
@@ -125,19 +122,23 @@ int Game::test2() {
 
 	return 0;
 }
-
+*/
 void Game::run() {
+	/*
+	int frame = 0;
+	int second = 0;
+	int minute = 0;
+	int milisecond = 0;
+	*/
 
 	//Board b1;
 	//Board b2;
 
 	//Board board;
 	ControllerCommand input;
-	int frame = 0;
-	int second = 0;
-	int minute = 0;
-	int milisecond = 0;
-	int MS_PER_FRAME = 16;//miliseconds per frame
+
+	int MS_PER_FRAME = 1000 / FPS;//1000 ms per seconds
+	//int MS_PER_FRAME = 16;//miliseconds per frame
 						  //clock_t FPS = 60;
 	/*
 	clock_t lastTime = clock();
@@ -175,45 +176,21 @@ void Game::run() {
 		//current = clock();
 		//elapsed = current - lastTime;
 		current.restart();
-		input = ControllerCommand::noInput;
+		input = ControllerCommand::NoInput;
 		///get input here
-		/*
-		if (_kbhit())
-		{
-			b1.handleInput(getInput());
-		}
-		*/
 
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
-			/*
+			
 			if (event.type == sf::Event::Closed)
 			{
 				window.close();
 				//exit(EXIT_SUCCESS);
 			}
-			*/
-			switch(event.type)
-			{
-				case sf::Event::Closed: window.close(); break;	
-				case sf::Event::KeyPressed:
-					{
-						switch(event.key)
-						{
-							//list of keys
-							case sf::Keyboard::Up: input = ControllerCommand::Up; break;
-							case sf::Keyboard::Down: input = ControllerCommand::Down; break;
-							case sf::Keyboard::Left: input = ControllerCommand::Left; break;
-							case sf::Keyboard::Right: input = ControllerCommand::Right; break;
-							case sf::Keyboard::Z: input = ControllerCommand::a; break;
-							case sf::Keyboard::Escape: input = ControllerCommand::Cheat; break;
-							default: input = ControllerCommand::noInput; break;
-						}
-						break;
-					}
-				default: break;
-			}
+			
+			input = handleInput(event);
+			
 			/*
 			else if (event.type == sf::Event::KeyPressed)
 			{
@@ -221,18 +198,13 @@ void Game::run() {
 			}
 			*/
 		}
-
-		
 		//blockSprites[1].setColor(sf::Color::Red);
 
 		window.clear();
 
-		//window.draw(boardFrameSprite);
-		//window.draw(blockSprites[1]);
-
 		printf("%d:%d  Frame: %d\n", minute, second, frame);
 		printf("Average FPS: %3.2f        \nNB Frames: %3.2f     \nTemps: %d           \nClocks per Sec: %3.2f\n", CalcAverageTick((int)elapsed.asMilliseconds()), (float)elapsed.asMilliseconds() * 60, elapsed, (float)CLOCKS_PER_SEC);
-		b1.run();
+		b1.run(input);
 		//testDisplay(b1);
 		draw();
 		b1.display();
@@ -243,7 +215,7 @@ void Game::run() {
 		if (MS_PER_FRAME - elapsed.asMilliseconds() > 0)
 		{
 			fflush(stdout);
-			Sleep(MS_PER_FRAME - elapsed.asMilliseconds());
+			Sleep((int)(MS_PER_FRAME - elapsed.asMilliseconds()));
 		}
 		//system("cmd /c cls");
 		gotoxy(0, 0);
@@ -251,16 +223,46 @@ void Game::run() {
 
 }
 
+ControllerCommand Game::handleInput(sf::Event event) {
+
+	switch (event.type)
+	{
+	//case sf::Event::Closed: window.close(); break;
+	case sf::Event::KeyPressed:
+	{
+		switch (event.key.code)
+		{
+			//list of keys
+		case sf::Keyboard::F1: return ControllerCommand::Pause; break;
+		case sf::Keyboard::Up: return ControllerCommand::Up; break;
+		case sf::Keyboard::Down: return ControllerCommand::Down; break;
+		case sf::Keyboard::Left: return ControllerCommand::Left; break;
+		case sf::Keyboard::Right: return ControllerCommand::Right; break;
+		case sf::Keyboard::Z:
+		case sf::Keyboard::X: 
+			return ControllerCommand::Swap; break;
+		case sf::Keyboard::F4: reset(); 
+		default: return ControllerCommand::NoInput; break;
+		}
+		break;
+	}
+	default: break;
+	}
+}
+	/*
 sf::Sprite Game::spriteColor(BlockColor color) {
+
 	switch (color) 
 	{
-	case BlockColor::blue: return blockSprites[3]; break;
+	case BlockColor::blue : return blockSprites[3]; break;
 	case BlockColor::none :
 	default:
 		return blockSprites[7]; break;
 	}
-}
+	
 
+}
+*/
 int Game::spriteColorInt(BlockColor color) {
 	switch (color)
 	{
@@ -270,44 +272,55 @@ int Game::spriteColorInt(BlockColor color) {
 	case blue: return 3;
 	case purple: return 4;
 	case pink: return 5;
-	//case exclam: return 6;
+		//case exclam: return 6;
 	case none: return 7;
 	default:
 		return 7;
 	}
 }
 
-
 void Game::setBoardTextures(Board board) {
 	/*Set the texture of the blocks in the stack */
 
 	int textureIndexX;
 	int textureIndexY;
-
+	/*Board SetTextureRect*/
 	for (int i = 0; i < BOARD_HEIGHT; i++)
 	{
 		for (int j = 0; j < BOARD_WIDTH; j++)
 		{
-
 			textureIndexX = 7*TILE_SIZE;
 			textureIndexY = 0;
 
 			textureIndexX = spriteColorInt(board.tiles[i][j].block.color)*TILE_SIZE;
 			textureIndexY = 0;
+			
 
-			if (board.tiles[i][j].block.matching)// || board.tiles[i][j].block.clearing)
-			{
-				textureIndexY += TILE_SIZE;
-			}
+
 			if (board.tiles[i][j].isBlock())
 			{
 				//if (i == board.TOP_ROW)//smaller rectangle for the tip
 					//boardSprites[i][j].setTextureRect(sf::IntRect(textureIndexX, textureIndexY + board.bufferRowOffset *2, TILE_SIZE, TILE_SIZE - board.bufferRowOffset*2));
 				//else
 					boardSprites[i][j].setTextureRect(sf::IntRect(textureIndexX, textureIndexY, TILE_SIZE, TILE_SIZE));
+					if (board.tiles[i][j].block.state == BlockState::matching)// || board.tiles[i][j].block.clearing)
+					{
+						textureIndexY += TILE_SIZE;
+						boardSprites[i][j].setColor(sf::Color(255, 255, 255, 128 + 127 * (board.tiles[i][j].matchingCounter % 2)));
+						/*TODO: create flashing effect*/
+					}
+					else if (board.tiles[i][j].isClear() ||board.tiles[i][j].block.state == BlockState::cleared)
+					{
+						boardSprites[i][j].setTextureRect(sf::IntRect(0, 0, 0, 0));
+					}
+					else 
+					{
+						boardSprites[i][j].setColor(sf::Color(255, 255, 255, 255));
+					}
+
 				//boardSprites[i][j].setColor(sf::Color(255, 255, 255, 255));
 			}
-			else if (board.tiles[i][j].isAir())
+			else if (board.tiles[i][j].isAir() )
 			{
 				boardSprites[i][j].setTextureRect(sf::IntRect(0,0,0,0));
 			}
@@ -318,12 +331,14 @@ void Game::setBoardTextures(Board board) {
 			//window.draw(spriteColor(b1.tiles[i][j].block.color));
 		}
 	}
+	/*BufferRow SetTextureRect*/
 	for (int j = 0; j < BOARD_WIDTH; j++)
 	{
 		/*Creates a block with a height of the bufferRowOffset*/
 		bufferRowSprites[j].setTextureRect(sf::IntRect(
 			spriteColorInt(board.bufferRow[j].block.color)*TILE_SIZE, 0, TILE_SIZE, board.bufferRowOffset*2));//16 same as tileSize
-		//window.draw(spriteColor(b1.tiles[i][j].block.color));
+
+		/*Darker BufferRow to differenciate it from other blocks*/
 		bufferRowSprites[j].setColor(sf::Color(255,255,255,64));
 	}
 
@@ -379,19 +394,23 @@ void Game::setBlockPositions(Board board) {
 			*/
 			if (board.tiles[i][j].block.state == BlockState::swapping)
 			{
-				switch (board.tiles[i][j].block.stateExtra)
+				if (board.tiles[i][j].swappingCounter > 0)
 				{
-				case swappingLeft:
-				{
-					vectorX -= board.tiles[i][j].swappingCounter;
-					break;
-				}
-				case swappingRight:
-				{
-					vectorX += board.tiles[i][j].swappingCounter;
-					break;
-				}
-				default: break;
+
+					switch (board.tiles[i][j].block.stateExtra)
+					{
+					case swappingLeft:
+					{
+						vectorX += 4 - board.tiles[i][j].swappingCounter;
+						break;
+					}
+					case swappingRight:
+					{
+						vectorX -= 4 - board.tiles[i][j].swappingCounter;
+						break;
+					}
+					default: break;
+					}
 				}
 			}
 			
@@ -400,7 +419,7 @@ void Game::setBlockPositions(Board board) {
 		}
 	}
 	/*BufferRow*/
-	vectorX = displayX + spriteDisplaySize*BOARD_HEIGHT;
+	//vectorX = displayX + spriteDisplaySize*BOARD_HEIGHT;
 	vectorY = displayY + spriteDisplaySize - board.bufferRowOffset * 2;
 	for (int j = 0; j < BOARD_WIDTH; j++)
 	{
@@ -414,6 +433,7 @@ void Game::setBlockPositions(Board board) {
 
 
 }
+/*
 void Game::drawBoard1(int row, int column) {
 
 	for (int i = 0; i < b1.boardHeight; i++)
@@ -423,17 +443,13 @@ void Game::drawBoard1(int row, int column) {
 			window.draw(spriteColor(b1.tiles[i][j].block.color));
 		}
 	}
-
+	
 }
-
+*/
 void Game::draw()
 {
 
 	int bufferRowOffset = b1.bufferRowOffset;
-	int spriteDisplaySize = 32;
-	int displayRow = 427;
-	int displayCol = 58;
-
 	
 	window.draw(boardFrameSprite);
 	//boardFrameSprite.setColor(sf::Color(255, 255, 255, 128));
@@ -452,8 +468,7 @@ void Game::draw()
 
 	for (int j = 0; j < BOARD_WIDTH; j++)
 	{
-		//bufferRowSprites[j].setScale(sf::Vector2f(2.f, 2.f));
-		window.draw(bufferRowSprites[j]);
+		window.draw(bufferRowSprites[j]);//why does it get drawn twice
 	}
 	/*calls the .draw() function on all sprites*/
 	/*
@@ -517,8 +532,8 @@ void Game::testDisplay(Board &board) {
 
 		window.clear();
 
-		window.draw(boardFrameSprite);
-		window.draw(blockSprites[1]);
+		//window.draw(boardFrameSprite);
+		//window.draw(blockSprites[1]);
 
 		//window.display();
 	//}

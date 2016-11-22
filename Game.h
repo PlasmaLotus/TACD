@@ -16,23 +16,31 @@ public:
 	sf::RenderWindow window;
 	//sf::RenderWindow window(sf::VideoMode(800, 600), "Why doesnt the block draw");
 
-Game();
-~Game();
+	Game();
+	~Game();
+	/*Game Time*/
+	int frame;
+	int second;
+	int minute;
+	int milisecond;
 
-void init();
+	void reset();
 
-int test2();
-
-int test();
-
-void run();
+	void init();
+	void run();
 
 
 private:
+	int test2();
+
+	int test();
+
+	ControllerCommand handleInput(sf::Event event);
+
 	static const int BOARD_WIDTH = 6;
 	static const int BOARD_HEIGHT = 12;
 
-	sf::Sprite spriteColor(BlockColor color);
+	//sf::Sprite spriteColor(BlockColor color);
 
 	int spriteColorInt(BlockColor color);
 
@@ -57,8 +65,8 @@ private:
 
 
 	sf::Texture blockTexture;
-	static const int NB_BLOCKS_SPRITES = 9;
-	sf::Sprite blockSprites[NB_BLOCKS_SPRITES];
+	//static const int NB_BLOCKS_SPRITES = 9;
+	//sf::Sprite blockSprites[NB_BLOCKS_SPRITES];
 
 
 	sf::Sprite boardSprites[BOARD_HEIGHT][BOARD_WIDTH];

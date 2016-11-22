@@ -7,11 +7,16 @@ Updated Nov 7, 2016
 
 Tile::Tile():
 type(air),
-airLock(false),
+//airLock(false),
 //fallingCounter(DEFAULT_COUNTER_VALUE),
 swappingCounter(DEFAULT_COUNTER_VALUE),
 fallingBufferCounter(DEFAULT_COUNTER_VALUE),
-floatingCounter(DEFAULT_COUNTER_VALUE){
+floatingCounter(DEFAULT_COUNTER_VALUE),
+matchingCounter(DEFAULT_COUNTER_VALUE),
+//clearingCounter(DEFAULT_COUNTER_VALUE),
+popCounter(DEFAULT_POP_VALUE),
+popCounterFinal(DEFAULT_POP_VALUE),
+chainNumber(1){
 }
 
 Tile::~Tile() {
@@ -34,7 +39,16 @@ bool Tile::isGarbage() {
 }
 
 bool Tile::isAir() {
-	if (type == BlockType::air || block.state == BlockState::swapping)
+	/*Only really used in swapping algo*/
+	if (type == BlockType::air)// || (block.state == BlockState::clearing && block.stateExtra == BlockExtraState::poped))
 		return true;
+	return false;
+}
+
+bool Tile::isClear() {
+	if (block.state == BlockState::clearing && block.stateExtra == BlockExtraState::poped)
+	{
+		return true;
+	}
 	return false;
 }
