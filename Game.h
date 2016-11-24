@@ -29,13 +29,15 @@ public:
 	void init();
 	void run();
 
+	void handleInput(sf::Event event, Board & board);
+	ControllerCommand handleInput(sf::Event event);
 
 private:
 	int test2();
 
 	int test();
 
-	ControllerCommand handleInput(sf::Event event);
+	
 
 	static const int BOARD_WIDTH = 6;
 	static const int BOARD_HEIGHT = 12;

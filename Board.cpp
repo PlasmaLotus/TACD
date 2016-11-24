@@ -30,6 +30,7 @@ _stop(false),
 stopTime(0),
 pauseTime(0),
 _match(false),
+_falling(false),
 cursor({ 4,2 }) {
 	std::srand(time(NULL));
 	initBoardRandom();
@@ -75,6 +76,7 @@ void Board::display() {
 
 	displayBoard();
 	displaybufferRow();
+
 
 }
 void Board::displayBoard()
@@ -323,8 +325,10 @@ bool Board::swappable(int row, int col) {
 	
 		if (tile.isBlock() || tile.isAir())
 		{
-
-			if (tile.block.state == BlockState::normal || tile.block.state == BlockState::falling || tile.block.state == BlockState::swapping || tile.block.state == BlockState::falling || tile.block.stateExtra == BlockExtraState::poped)
+			if (tile.type == BlockType::block && tile.block.state == BlockState::swapping && tiles[row - 1][col].type == BlockType::air) {
+				return false;
+			}
+			if (tile.block.state == BlockState::normal || tile.block.state == BlockState::falling || tile.block.state == BlockState::swapping || tile.block.state == BlockState::falling)// || tile.block.stateExtra == BlockExtraState::poped)
 			{
 				return true;
 			}
@@ -431,33 +435,42 @@ bool Board::moveCursor(ControllerCommand d) {
 		default: return false;
 	}
 }
-bool Board::handleInput(ControllerCommand input) {
-	switch(input)
+void Board::addInput(ControllerCommand d) {
+	inputs.push(d);
+}
+bool Board::handleInput() {
+	
+	while (!inputs.empty())
 	{
-		case ControllerCommand::Up :
-		case ControllerCommand::Down :
-		case ControllerCommand::Left :
-		case ControllerCommand::Right :
+		ControllerCommand input = inputs.top();
+		inputs.pop();
+		switch(input)
 		{
-			return moveCursor(input);
-		}
-		case ControllerCommand::Swap :
+			case ControllerCommand::Up :
+			case ControllerCommand::Down :
+			case ControllerCommand::Left :
+			case ControllerCommand::Right :
 			{
-				//swap blocks
-				swapBlocks();
-				break;
+				return moveCursor(input);
 			}
-		case ControllerCommand::ForceRaise :
+			case ControllerCommand::Swap :
+				{
+					//swap blocks
+					swapBlocks();
+					break;
+				}
+			case ControllerCommand::ForceRaise :
+				{
+					//force Raise
+					break;
+				}
+			case ControllerCommand::Pause:
 			{
-				//force Raise
-				break;
+				betaValue++;
 			}
-		case ControllerCommand::Pause:
-		{
-			betaValue++;
+			case ControllerCommand::NoInput :
+			default: return false;
 		}
-		case ControllerCommand::NoInput :
-		default: return false;
 	}
 	return false;
 	
@@ -754,7 +767,8 @@ void Board::handleBufferRow() {
 	}
 	*/
 
-	if (!_activeBlocks)
+	//if (!_match && !_swap)//!_activeBlocks
+	if (!_stop)
 	{
 		bufferRowTics++;
 		if (bufferRowTics > bufferRowTotalTics / bufferRowOffsetTotal)//or >=
@@ -763,38 +777,38 @@ void Board::handleBufferRow() {
 			bufferRowTics = 0;
 		}
 
-		if (bufferRowOffset >= bufferRowOffsetTotal)
+if (bufferRowOffset >= bufferRowOffsetTotal)
+{
+	for (int i = BOARD_HEIGHT - 2; i >= 0; i--)
+	{
+		for (int j = 0; j < boardWidth; j++)
 		{
-			for (int i = BOARD_HEIGHT - 2; i >= 0; i--)
-			{
-				for (int j = 0; j < boardWidth; j++)
-				{
-					tiles[i + 1][j] = tiles[i][j];
+			tiles[i + 1][j] = tiles[i][j];
 
-					if (i == 0)
-					{
-						tiles[0][j] = bufferRow[j];
-					}
-				}
-			}
-			bufferRowTics = 0;
-			bufferRowOffset = 0;
-			if (cursor.row < TOP_ROW)
+			if (i == 0)
 			{
-				cursor.row++;
+				tiles[0][j] = bufferRow[j];
 			}
-			bufferRowNewbufferRow();
 		}
-		/*
-		if (_stackRaiseForced) {
-			++_score;
-		}
+	}
+	bufferRowTics = 0;
+	bufferRowOffset = 0;
+	if (cursor.row < TOP_ROW)
+	{
+		cursor.row++;
+	}
+	bufferRowNewbufferRow();
+}
+/*
+if (_stackRaiseForced) {
+	++_score;
+}
 
-		_stackRaiseForced = false;
-		if (_cursorY <= 10) {
-			++_cursorY;
-		}
-		*/
+_stackRaiseForced = false;
+if (_cursorY <= 10) {
+	++_cursorY;
+}
+*/
 	}
 }
 
@@ -804,19 +818,19 @@ void Board::handleFallingBlocks() {
 	for (int i = 0; i < boardHeight; i++)
 	{
 		for (int j = 0; j < boardWidth; j++)
-		{	
-			if (tiles[i][j].isBlock())
+		{
+			if (tiles[i][j].type == BlockType::block)
 			{
 				if (tiles[i][j].block.state == BlockState::normal)
 				{
-					
+
 					if (i >= 1)//no need to check the bottom row
 					{
-						if ( tiles[i - 1][j].type == BlockType::air || tiles[i-1][j].block.state == BlockState::floating || tiles[i - 1][j].block.state == BlockState::falling )
+						if (tiles[i - 1][j].type == BlockType::air || tiles[i - 1][j].block.state == BlockState::floating || tiles[i - 1][j].block.state == BlockState::falling)
 							//|| (tiles[i-1][j].block.state == BlockState::cleared && tiles[i][j].block.stateExtra != BlockExtraState::fromClear)) 
-						{	
-								tiles[i][j].block.state = BlockState::floating;
-								tiles[i][j].floatingCounter = tiles[i-1][j].floatingCounter;
+						{
+							tiles[i][j].block.state = BlockState::floating;
+							tiles[i][j].floatingCounter = tiles[i - 1][j].floatingCounter;
 
 						}
 						//else if ()
@@ -826,11 +840,11 @@ void Board::handleFallingBlocks() {
 				{
 					//tiles[i][j].airLock = false;
 					//block hovers for a while
-					if (tiles[i][j].floatingCounter >= FloatingTime)
+					if (tiles[i][j].floatingCounter > FloatingTime)
 					{
 						tiles[i][j].block.state = BlockState::falling;
 						tiles[i][j].floatingCounter = Tile::DEFAULT_COUNTER_VALUE;
-						
+
 					}
 					else
 						tiles[i][j].floatingCounter++;
@@ -844,35 +858,53 @@ void Board::handleFallingBlocks() {
 					Allows for trick chains*/
 					if (i >= 1)
 					{
-						if (tiles[i - 1][j].type == BlockType::air || (tiles[i - 1][j].block.state == BlockState::cleared && tiles[i][j].block.stateExtra != BlockExtraState::fromClear)) 
-						{	
+						if ((tiles[i - 1][j].type == BlockType::air && tiles[i - 1][j].block.state != BlockState::swapping))
+						{
 							/*Falls through*/
 							/*TODO: implement the state from Clear*/
 							//move block place
 
-							if (tiles[i - 1][j].block.state == BlockState::normal) 
-							{
 
-							}
 							tiles[i - 1][j] = tiles[i][j];
 							//tiles[i][j] = Tile();
 							tiles[i][j].type = BlockType::air;
 						}
-						else
+						if (tiles[i - 1][j].block.state == BlockState::normal || tiles[i - 1][j].block.state == BlockState::swapping || tiles[i-1][j].block.state == BlockState::landed)
 						{
 							/*abord fall*/
 							//tiles[i][j].airLock = false;
 							tiles[i][j].block.state = BlockState::landed;
 						}
+						if (tiles[i - 1][j].block.state == BlockState::cleared && tiles[i][j].block.stateExtra != BlockExtraState::fromClear)//skill chain mechanics
+						{
+							/*yet to be implemenmted*/
+						}
 					}
-
+					else if (i <= 0)
+					{
+						tiles[i][j].block.state = BlockState::landed;
+					}
 				}
 				else if (tiles[i][j].block.state == BlockState::landed)
 				{
 					tiles[i][j].block.state = BlockState::normal;
 				}
 			}
-
+			else if (tiles[i][j].type == BlockType::air)
+			{
+				if (tiles[i][j].block.state == BlockState::floating)
+				{
+					tiles[i][j].block.state = BlockState::falling;
+				}
+				else if (tiles[i][j].block.state == BlockState::falling)
+				{
+					tiles[i][j].block.state = BlockState::landed;
+				}
+				else if (tiles[i][j].block.state == BlockState::landed)
+				{
+					tiles[i][j].block.state = BlockState::normal;
+				}
+			}
 		}
 	}
 }
@@ -942,8 +974,8 @@ void Board::handleMatchingBlocks() {
 					tiles[i][j].block.state = BlockState::clearing;
 					clearing = true;
 					//initClearing(pop)
-					tiles[i][j].popCounter = BlockClearWaitTime;
-					tiles[i][j].popCounterFinal = BlockClearWaitTime;
+					tiles[i][j].popCounter = 0;
+					tiles[i][j].popCounterFinal = 0;
 					tiles[i][j].block.matching = false;
 
 				}
@@ -1021,9 +1053,9 @@ void Board::handleClearingBlocks() {
 	for (int i = boardHeight - 1; i >= 0; i--) {
 		for (int j = 0; j < boardWidth; j++) {
 			//***find how many blocks are needed to pop at the same time
-			if (tiles[i][j].block.state == BlockState::clearing && tiles[i][j].popCounter == BlockClearWaitTime)// && tiles[i][j].popCounter == Tile::DEFAULT_POP_VALUE) {
+			if (tiles[i][j].block.state == BlockState::clearing && tiles[i][j].popCounter == 0)// && tiles[i][j].popCounter == Tile::DEFAULT_POP_VALUE) {
 			{
-				tiles[i][j].popCounter += popTime;
+				tiles[i][j].popCounter += BlockClearWaitTime + popTime;
 				popTime += BlockPopTime;
 			}
 		}
@@ -1031,15 +1063,15 @@ void Board::handleClearingBlocks() {
 	for (int i = boardHeight - 1; i >= 0; i--) {
 		for (int j = 0; j < boardWidth; j++) {
 
-			if (tiles[i][j].block.state == BlockState::clearing)// && tiles[i][j].popCounter != Tile::DEFAULT_POP_VALUE && tiles[i][j].popCounter == Tile::DEFAULT_POP_VALUE) {
+			if (tiles[i][j].block.state == BlockState::clearing && tiles[i][j].popCounterFinal == 0)// && tiles[i][j].popCounter != Tile::DEFAULT_POP_VALUE && tiles[i][j].popCounter == Tile::DEFAULT_POP_VALUE) {
 			{
-				tiles[i][j].popCounterFinal += popTime;
+				tiles[i][j].popCounterFinal += BlockClearWaitTime + popTime;
 				//popTime += BlockPopTime;
 				//***find how many blocks are needed to pop at the same time
 			}
 		}
 	}
-	betaValue++;
+	//betaValue++;
 	/*~Init Popping*/
 
 	/*Pop Countdown*/
@@ -1086,7 +1118,10 @@ void Board::setChainAbove(int row, int col, int chain) {
 void Board::initTics() {
 	
 	int matchingChain = 0;
-	_match = true;
+	_match = false;
+	_swap = false;
+	_stop = false;
+	_falling = false;
 	for (int i = 0; i < boardHeight; i++)
 	{
 		for (int j = 0; j < boardWidth; j++)
@@ -1096,11 +1131,21 @@ void Board::initTics() {
 			{
 				_match = true;
 			}
+			if (tiles[i][j].block.state == BlockState::swapping)
+			{
+				_swap = true;
+			}
+			if ( (tiles[i][j].type == BlockType::block || tiles[i][j].type == BlockType::garbage) && ( tiles[i][j].block.state == BlockState::falling || tiles[i][j].block.state == BlockState::landed || tiles[i][j].block.state == BlockState::floating))
+			{
+				_falling = true;
+			}
 			
-			if (tiles[i][j].type == BlockType::air) {
+			if (tiles[i][j].type == BlockType::air && tiles[i][j].block.state != BlockState::swapping) {
 				tiles[i][j].block.state = BlockState::normal;
+				tiles[i][j].block.color = BlockColor::none;
 			}
 
+			/*
 			if (!_match)
 			{
 				if(tiles[i][j].block.state != BlockState::matching)
@@ -1111,30 +1156,30 @@ void Board::initTics() {
 				//if()
 				//tiles[i][j].block.state = BlockState::normal;//caused problem
 			}
-
+			*/
 
 			/*check if any match*/
 			switch (tiles[i][j].block.state == matching)
 			{
-			case BlockState::matching:
-			case BlockState::falling:
-			case BlockState::clearing:
-			case BlockState::cleared:
-			{
-				matchingChain++;
-				break;
-			}
-			case BlockState::normal:
-			{
-				tiles[i][j].setBlockMatching(false);
-				if (tiles[i][j].block.stateExtra == BlockExtraState::swappingLeft || tiles[i][j].block.stateExtra == BlockExtraState::swappingRight || tiles[i][j].block.stateExtra == BlockExtraState::poped)
+				case BlockState::matching:
+				case BlockState::falling:
+				case BlockState::clearing:
+				case BlockState::cleared:
 				{
-					tiles[i][j].block.stateExtra = BlockExtraState::extraNormal;
+					matchingChain++;
 					break;
 				}
-			}
-			default: 
-				break;
+				case BlockState::normal:
+				{
+					tiles[i][j].setBlockMatching(false);
+					if (tiles[i][j].block.stateExtra == BlockExtraState::swappingLeft || tiles[i][j].block.stateExtra == BlockExtraState::swappingRight || tiles[i][j].block.stateExtra == BlockExtraState::poped)
+					{
+						tiles[i][j].block.stateExtra = BlockExtraState::extraNormal;
+						break;
+					}
+				}
+				default: 
+					break;
 			}
 			if (matchingChain <= 0) {
 				isChain = false;
@@ -1144,12 +1189,12 @@ void Board::initTics() {
 	}
 
 	//if (tiles[i][j].)
-	if (_match || _swap)
+	if (_match || _swap || _falling)
 	{
 		_stop = true;
 
 	}
-
+	
 
 		if (!isChain) {
 			chainCounter = 1;
@@ -1189,13 +1234,20 @@ void Board::run() {
 void Board::run(ControllerCommand input) {
 	initTics();
 	
-	handleInput(input);
-	//checkMatch();
-	BetacheckMatch();
+	handleInput();
+	//handleInput(input);
+	while (!inputs.empty())
+	{
+		inputs.pop();
+	}
+
 
 	handleSwappingBlocks();
 	handleBufferRow();
 	handleFallingBlocks();
+
+	//checkMatch();
+	BetacheckMatch();
 
 	handleMatchingBlocks();
 	//handleClearingBlocks();

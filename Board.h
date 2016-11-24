@@ -44,9 +44,11 @@ public:
 	bool _combo;
 	bool _match;
 	bool _swap;
+	bool _stop;
+	bool _falling;
 
 	bool _activeBlocks;
-	bool _stop;
+
 	int stopTime;
 	int pauseTime;
 
@@ -65,6 +67,10 @@ public:
 	bool swapBlocks();
 
 	bool moveCursor(ControllerCommand d);
+
+	void addInput(ControllerCommand d);
+
+	bool handleInput();
 
 	bool handleInput(ControllerCommand input);
 
@@ -113,6 +119,8 @@ public:
 private:
 
 	RandomBoardGenerator randomBoardHandler;
+
+	std::stack <ControllerCommand> inputs;
 	
 	//static const char FPS = 60;
 	//int boardLevel = 5;
@@ -149,7 +157,7 @@ private:
 	/*Animation takes 4 frames, but can be reswapped as early as frame 3*/
 	static const char SwappingTime = 4; //want block to be normal at end
 	//static const char FallingBufferTime = 10;
-	static const char FloatingTime = 5; //or 4 //11 at eazy
+	static const char FloatingTime = 6; //or 4 //11 at eazy
 	//static const char MatchTime = 0;
 
 

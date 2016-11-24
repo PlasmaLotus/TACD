@@ -137,7 +137,7 @@ void Game::run() {
 	//Board board;
 	ControllerCommand input;
 
-	int MS_PER_FRAME = 1000 / FPS;//1000 ms per seconds
+	double MS_PER_FRAME = 1000.0 / FPS;//1000 ms per seconds
 	//int MS_PER_FRAME = 16;//miliseconds per frame
 						  //clock_t FPS = 60;
 	/*
@@ -188,17 +188,10 @@ void Game::run() {
 				window.close();
 				//exit(EXIT_SUCCESS);
 			}
+			handleInput(event, b1);
+			//input = handleInput(event);
 			
-			input = handleInput(event);
-			
-			/*
-			else if (event.type == sf::Event::KeyPressed)
-			{
-				switch
-			}
-			*/
 		}
-		//blockSprites[1].setColor(sf::Color::Red);
 
 		window.clear();
 
@@ -223,8 +216,37 @@ void Game::run() {
 
 }
 
-ControllerCommand Game::handleInput(sf::Event event) {
+void Game::handleInput(sf::Event event, Board &board) {
 
+	if (event.type == sf::Event::KeyPressed)
+	{
+		if (event.key.code == sf::Keyboard::F1) {
+			board.addInput(ControllerCommand::Pause);
+		}
+		if (event.key.code == sf::Keyboard::Up) {
+			board.addInput(ControllerCommand::Up);
+		}
+		if (event.key.code == sf::Keyboard::Down) {
+			board.addInput(ControllerCommand::Down);
+		}
+		if (event.key.code == sf::Keyboard::Left) {
+			board.addInput(ControllerCommand::Left);
+		}
+		if (event.key.code == sf::Keyboard::Right) {
+			board.addInput(ControllerCommand::Right);
+		}
+		if (event.key.code == sf::Keyboard::X || event.key.code == sf::Keyboard::Z) {
+			board.addInput(ControllerCommand::Swap);
+		}
+		if (event.key.code == sf::Keyboard::F4) {
+			reset();
+			board.addInput(ControllerCommand::NoInput);
+		}
+	}
+}
+
+
+ControllerCommand Game::handleInput(sf::Event event){
 	switch (event.type)
 	{
 	//case sf::Event::Closed: window.close(); break;
@@ -248,6 +270,7 @@ ControllerCommand Game::handleInput(sf::Event event) {
 	}
 	default: break;
 	}
+	
 }
 	/*
 sf::Sprite Game::spriteColor(BlockColor color) {
