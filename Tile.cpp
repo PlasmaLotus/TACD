@@ -1,6 +1,6 @@
 /*
 Created by PlasmaLotus
-Updated Nov 7, 2016
+Updated Nov 25, 2016
 */
 
 #include "Tile.h"
@@ -10,7 +10,7 @@ type(air),
 //airLock(false),
 //fallingCounter(DEFAULT_COUNTER_VALUE),
 swappingCounter(DEFAULT_COUNTER_VALUE),
-fallingBufferCounter(DEFAULT_COUNTER_VALUE),
+fallingCounter(DEFAULT_COUNTER_VALUE),
 floatingCounter(DEFAULT_COUNTER_VALUE),
 matchingCounter(DEFAULT_COUNTER_VALUE),
 //clearingCounter(DEFAULT_COUNTER_VALUE),

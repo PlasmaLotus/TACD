@@ -1,6 +1,6 @@
 /*
 Created by PlasmaLotus
-Updated Nov 7, 2016
+Updated Nov 25, 2016
 */
 
 #include "Block.h"
@@ -20,14 +20,13 @@ struct Tile {
 	static const int DEFAULT_POP_VALUE = 4096;
 	//char fallingCounter;
 	int swappingCounter;
-	int fallingBufferCounter;
+	int fallingCounter;
 	int floatingCounter;
 	int matchingCounter;/*Also Knowned as FlashingCounter*/
 	//char flashingCounter;
 	//char clearingCounter;
 	int popCounter;
 	int popCounterFinal;
-	//bool airLock;//should only prevent swapping
 	int chainNumber;
 
 	Tile();

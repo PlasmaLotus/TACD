@@ -1,6 +1,6 @@
 /*
 Created by PlasmaLotus
-Updated Nov 7, 2016
+Updated Nov 25, 2016
 */
 
 #include <stack>
@@ -154,10 +154,11 @@ private:
 	//static const char FallingTime = 1;//nb of Frames for the block to fall 1 tile // prob 1 frame overall
 	/*Same fallTime on eazy, maybe no need for fall counter*/
 
+	static const int fallingTime = 0;
 	/*Animation takes 4 frames, but can be reswapped as early as frame 3*/
-	static const char SwappingTime = 4; //want block to be normal at end
+	static const int SwappingTime = 4; //want block to be normal at end
 	//static const char FallingBufferTime = 10;
-	static const char FloatingTime = 6; //or 4 //11 at eazy
+	static const int FloatingTime = 5; // 5 or 4 //11 at eazy
 	//static const char MatchTime = 0;
 
 

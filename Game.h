@@ -1,5 +1,9 @@
+/*
+Created by PlasmaLotus
+Updated Nov 25, 2016
+*/
 
-#include "SFML.h"
+#include "Game_SFML.h"
 #include "Board.h"
 
 #ifndef _Game_
@@ -14,7 +18,6 @@ public:
 	Board b1;
 	Board b2;
 	sf::RenderWindow window;
-	//sf::RenderWindow window(sf::VideoMode(800, 600), "Why doesnt the block draw");
 
 	Game();
 	~Game();
@@ -23,26 +26,19 @@ public:
 	int second;
 	int minute;
 	int milisecond;
+	/*~Game Time*/
 
 	void reset();
-
 	void init();
 	void run();
 
+	void handleInputPressRelease(sf::Event event, Board & board);
 	void handleInput(sf::Event event, Board & board);
 	ControllerCommand handleInput(sf::Event event);
 
 private:
-	int test2();
-
-	int test();
-
-	
-
 	static const int BOARD_WIDTH = 6;
 	static const int BOARD_HEIGHT = 12;
-
-	//sf::Sprite spriteColor(BlockColor color);
 
 	int spriteColorInt(BlockColor color);
 
@@ -52,12 +48,6 @@ private:
 
 	void setBlockPositions(Board board);
 
-	void setBoardTextures(sf::Sprite ** boardSprite, Board board);
-
-	void setBoardTextures(sf::Sprite ** boardSprite);
-
-	void drawBoard1(int row, int column);
-
 	void draw();
 	void display();
 	void _testDisplay(Board & board);
@@ -65,18 +55,19 @@ private:
 	int SCREEN_WIDTH = 640;
 	int SCREEN_HEIGHT = 480;
 
+	bool ControllerUp = false;
+	bool ControllerDown = false;
+	bool ControllerLeft = false;
+	bool ControllerRight = false;
+	bool ControllerSwap = false;
 
 	sf::Texture blockTexture;
-	//static const int NB_BLOCKS_SPRITES = 9;
-	//sf::Sprite blockSprites[NB_BLOCKS_SPRITES];
-
 
 	sf::Sprite boardSprites[BOARD_HEIGHT][BOARD_WIDTH];
 	sf::Sprite bufferRowSprites[BOARD_WIDTH];
 
 	sf::Texture boardFrameTexture;
 	sf::Sprite boardFrameSprite;
-
 
 	sf::Texture cursorTexture;
 	sf::Sprite cursorSprite;
