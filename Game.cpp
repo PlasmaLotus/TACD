@@ -16,8 +16,8 @@ Game::~Game(){
 }
 
 void Game::reset() {
-	b1 = Board();
-	b2 = Board();
+	b1.reset();// = Board();
+	b2.reset();// = Board();
 }
 
 void Game::init()
@@ -70,15 +70,6 @@ void Game::init()
 }
 
 void Game::run() {
-	/*
-	int frame = 0;
-	int second = 0;
-	int minute = 0;
-	int milisecond = 0;
-	*/
-
-	//Board b1;
-	//Board b2;
 
 	//Board board;
 	ControllerCommand input;
@@ -86,11 +77,6 @@ void Game::run() {
 	double MS_PER_FRAME = 1000.0 / FPS;//1000 ms per seconds
 	//int MS_PER_FRAME = 16;//miliseconds per frame
 						  //clock_t FPS = 60;
-	/*
-	clock_t lastTime = clock();
-	clock_t current = clock();
-	clock_t elapsed = current - lastTime;
-	*/
 	sf::Clock current;
 	sf::Time elapsed = current.restart();
 	while (window.isOpen())
@@ -107,6 +93,7 @@ void Game::run() {
 			{
 				second++;
 				milisecond = 0;
+				system("cmd /c cls");
 			}
 
 			if (second >= 60)
@@ -220,12 +207,15 @@ void Game::handleInput(sf::Event event, Board &board) {
 		if (event.key.code == sf::Keyboard::Right) {
 			board.addInput(ControllerCommand::Right);
 		}
-		if (event.key.code == sf::Keyboard::X || event.key.code == sf::Keyboard::Z) {
+		if (event.key.code == sf::Keyboard::X || event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Space) {
 			board.addInput(ControllerCommand::Swap);
 		}
 		if (event.key.code == sf::Keyboard::F4) {
 			reset();
 			board.addInput(ControllerCommand::NoInput);
+		}
+		if (event.key.code == sf::Keyboard::A) {
+			board.addInput(ControllerCommand::ForceRaise);
 		}
 	}
 
@@ -256,54 +246,4 @@ ControllerCommand Game::handleInput(sf::Event event){
 	default: break;
 	}
 	
-}
-
-void Game::_testDisplay(Board &board) {
-
-
-}
-
-void Game::testDisplay(Board &board) {
-	/*
-	std::string boardFramePath = TACD_DIRECTORY;
-	boardFramePath+= "1p.png";
-	//sf::Vector2f(1.f, 2.f);
-	sf::Texture boardFrameTexture;
-	sf::Sprite boardFrameSprite;
-	if (!boardFrameTexture.loadFromFile(boardFramePath))
-	{
-		// error...
-		printf("%s\n", "What Happened : BoardTexture fail , TestDisplay");
-		//return -1;
-	}
-	else 
-	{
-		printf("ok\n");
-	}
-	
-	boardFrameSprite.setTexture(boardFrameTexture);
-	boardFrameSprite.setPosition(10, 20);
-	*/
-
-	//while (window.isOpen())
-	//{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-			{
-				window.close();
-				//exit(EXIT_SUCCESS);
-			}
-		}
-
-		//blockSprites[1].setColor(sf::Color::Red);
-
-		window.clear();
-
-		//window.draw(boardFrameSprite);
-		//window.draw(blockSprites[1]);
-
-		//window.display();
-	//}
 }

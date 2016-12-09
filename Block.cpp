@@ -22,6 +22,11 @@ BlockColor Block::getColor()
 	return color;
 }
 
+void Block::setColor(BlockColor c)
+{
+	color = c;
+}
+
 void Block::setMatching(bool match) {
 	matching = match;
 }

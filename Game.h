@@ -5,6 +5,7 @@ Updated Nov 25, 2016
 
 #include "Game_SFML.h"
 #include "Board.h"
+#include "TestBoard.h"
 
 #ifndef _Game_
 #define _Game_
@@ -15,7 +16,8 @@ class Game{
 	
 public:
 
-	Board b1;
+	//Board b1;
+	TestBoard b1;
 	Board b2;
 	sf::RenderWindow window;
 

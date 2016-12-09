@@ -144,12 +144,12 @@ void Game::setBlockPositions(Board board) {
 					{
 					case swappingLeft:
 					{
-						vectorX += 4 - board.tiles[i][j].swappingCounter;
+						vectorX += 3 - board.tiles[i][j].swappingCounter;
 						break;
 					}
 					case swappingRight:
 					{
-						vectorX -= 4 - board.tiles[i][j].swappingCounter;
+						vectorX -= 3 - board.tiles[i][j].swappingCounter;
 						break;
 					}
 					default: break;

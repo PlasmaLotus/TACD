@@ -24,6 +24,7 @@ public:
 	virtual ~Block();
 	BlockColor getColor();
 	void setMatching(bool match);
+	void setColor(BlockColor c);
 
 private:
 

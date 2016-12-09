@@ -16,7 +16,9 @@ matchingCounter(DEFAULT_COUNTER_VALUE),
 //clearingCounter(DEFAULT_COUNTER_VALUE),
 popCounter(DEFAULT_POP_VALUE),
 popCounterFinal(DEFAULT_POP_VALUE),
-chainNumber(1){
+//chainNumber(1),
+g(nullptr),
+chain(false){
 }
 
 Tile::~Tile() {

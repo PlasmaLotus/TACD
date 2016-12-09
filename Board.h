@@ -4,10 +4,12 @@ Updated Nov 25, 2016
 */
 
 #include <stack>
+#include <list>
 #include "Block.h"
 #include "Tile.h"
 #include "GeneralEnum.h"
 #include "BoardRandomBoardHandler.h"
+#include "GarbageBlock.h"
 
 
 #ifndef _Board_
@@ -28,6 +30,9 @@ public:
 	//struct cursor
 	struct Position {
 		int row, column;
+		bool equals(const Position &p1, const Position &p2);
+		bool operator==(const Position p2);
+		bool sort(const Position &p1, const Position &p2);
 	};
 	Position cursor;
 
@@ -41,6 +46,7 @@ public:
 	bool forceRaise;
 	bool isChain;
 	int chainCounter;
+	int comboCounter;
 	bool _combo;
 	bool _match;
 	bool _swap;
@@ -59,6 +65,7 @@ public:
 	void displaybufferRow();
 	BlockColor randomColor(void);
 	BlockColor randomColor(int nbColor);
+	void initBoardEmpty();
 	void init_Board(int nbBlocks);
 	void initBoardRandom();
 	void bufferRowNewbufferRow();
@@ -76,51 +83,43 @@ public:
 
 	bool _checkMatch(int row, int column, int row2, int column2);
 	bool checkMatch(void);
-
+	bool BetacheckMatch3(void);
 	bool BetacheckMatch2(void);
-
 	bool BetacheckMatch(void);
 	bool _checkMatchbufferRow(int column, int column2);
-
 	bool checkMatchbufferRow(void);
-
 	bool checkAllMatches(void);
-
 	bool isMatch(void);
-
 	void handleBufferRow();
-
 	void handleFallingBlocks();
-
 	void _swapBlocks(int row, int column, int row2, int column2);
-
 	void handleSwappingBlocks();
-
 	void handleMatchingBlocks();
-
 	void ClearingBlocksInitPop(int popTime);
-
 	void ClearingBlocksInitPopFinal(int popTimeFinal);
-
 	void handleClearingBlocks();
-
 	void setChainAbove(int row, int col, int chain);
-
-	//void handleBlocks();
-
 	void setChainAbove(int row, int col);
 
 	void initTics();
 
 	void run();
 	void run(ControllerCommand input);
+	void reset();
+
+	void clearAll();
+
+	std::list <GarbageBlock> garbageQueue;
 
 
+	bool stackRaiseEnabled = true;
 private:
 
 	RandomBoardGenerator randomBoardHandler;
 
 	std::stack <ControllerCommand> inputs;
+
+
 	
 	//static const char FPS = 60;
 	//int boardLevel = 5;
