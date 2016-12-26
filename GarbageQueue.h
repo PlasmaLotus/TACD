@@ -11,7 +11,7 @@ Updated Dec 08, 2016
 #include <list>
 #include "GarbageBlock.h"
 
-class GarbageQueue {
+class GarbageQueueClass {
 
 public :
 	std::list<GarbageBlock> queue;

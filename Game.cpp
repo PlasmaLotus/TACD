@@ -24,12 +24,12 @@ void Game::init()
 {
 	window.create(sf::VideoMode(800, 600), "TACD");
 
-	std::string blockTexturePath = TACD_DIRECTORY;
-	blockTexturePath += "IMG Files/blocksUpdated.png";
-	std::string boardFramePath = TACD_DIRECTORY;
-	boardFramePath += "1p.png";
-	std::string cursorPath = TACD_DIRECTORY;
-	cursorPath += "IMG Files/cursor.png";
+	std::string blockTexturePath = "assets/images/blocksUpdated.png";
+	//blockTexturePath += "IMG Files/blocksUpdated.png";
+	std::string boardFramePath = "assets/images/1p.png";
+	//boardFramePath += "IMG Files/1p.png";
+	std::string cursorPath = "assets/images/cursor.png";
+	//cursorPath += "IMG Files/cursor.png";
 
 	blockTexture.setRepeated(true);
 
@@ -72,7 +72,7 @@ void Game::init()
 void Game::run() {
 
 	//Board board;
-	ControllerCommand input;
+	ControllerCommand input =  ControllerCommand::NoInput;
 
 	double MS_PER_FRAME = 1000.0 / FPS;//1000 ms per seconds
 	//int MS_PER_FRAME = 16;//miliseconds per frame
@@ -103,35 +103,35 @@ void Game::run() {
 			}
 		}
 		/*~Manage Time Beta*/
-
-		//processInput();
-
 		//current = clock();
 		//elapsed = current - lastTime;
 		current.restart();
-		input = ControllerCommand::NoInput;
+		
 		///get input here
-
+		input = ControllerCommand::NoInput;
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
-			
 			if (event.type == sf::Event::Closed)
 			{
 				window.close();
-				//exit(EXIT_SUCCESS);
+				exit(EXIT_SUCCESS);
 			}
-			handleInput(event, b1);
+			//handleInput(event, b1);
 			//input = handleInput(event);
-			
+			handleInput(event, input);
 		}
-
+		/*
+		if (input != ControllerCommand::NoInput)
+		{
+			b1.handleInput(input);
+		}
+		*/
 		window.clear();
 
 		printf("%d:%d  Frame: %d\n", minute, second, frame);
 		printf("NB Frames: %3.2f     \nTemps: %d           \nClocks per Sec: %3.2f\n", (float)elapsed.asMilliseconds() * 60, elapsed, (float)CLOCKS_PER_SEC);
 		b1.run(input);
-		//testDisplay(b1);
 		draw();
 		b1.display();
 		display();
@@ -145,45 +145,6 @@ void Game::run() {
 		}
 		//system("cmd /c cls");
 		gotoxy(0, 0);
-	}
-
-}
-
-void Game::handleInputPressRelease(sf::Event event, Board &board) {
-
-	if (event.type == sf::Event::KeyPressed)
-	{
-		if (event.key.code == sf::Keyboard::F1) {
-			board.addInput(ControllerCommand::Pause);
-		}
-		if (event.key.code == sf::Keyboard::Up) {
-			ControllerUp = true;
-			board.addInput(ControllerCommand::Up);
-		}
-		if (event.key.code == sf::Keyboard::Down) {
-			ControllerDown = true;
-			board.addInput(ControllerCommand::Down);
-		}
-		if (event.key.code == sf::Keyboard::Left) {
-			ControllerLeft = true;
-			board.addInput(ControllerCommand::Left);
-		}
-		if (event.key.code == sf::Keyboard::Right) {
-			ControllerRight = true;
-			board.addInput(ControllerCommand::Right);
-		}
-		if (event.key.code == sf::Keyboard::X || event.key.code == sf::Keyboard::Z) {
-			ControllerSwap = true;
-			board.addInput(ControllerCommand::Swap);
-		}
-		if (event.key.code == sf::Keyboard::F4) {
-			reset();
-			board.addInput(ControllerCommand::NoInput);
-		}
-	}
-	if (event.type == sf::Event::KeyReleased)
-	{
-		//
 	}
 
 }
@@ -221,12 +182,42 @@ void Game::handleInput(sf::Event event, Board &board) {
 
 }
 
-ControllerCommand Game::handleInput(sf::Event event){
-	switch (event.type)
-	{
-	//case sf::Event::Closed: window.close(); break;
-	case sf::Event::KeyPressed:
-	{
+ControllerCommand Game::handleInput(sf::Event event, ControllerCommand& input){
+
+		if (event.type == sf::Event::KeyPressed)
+		{
+			if (event.key.code == sf::Keyboard::F1) {
+				input =  ControllerCommand::Pause;
+			}
+			if (event.key.code == sf::Keyboard::Up) {
+				input = ControllerCommand::Up;
+			}
+			if (event.key.code == sf::Keyboard::Down) {
+				input = ControllerCommand::Down;
+			}
+			if (event.key.code == sf::Keyboard::Left) {
+				input =  ControllerCommand::Left;
+			}
+			if (event.key.code == sf::Keyboard::Right) {
+				input =  ControllerCommand::Right;
+			}
+			if (event.key.code == sf::Keyboard::X || event.key.code == sf::Keyboard::Z || event.key.code == sf::Keyboard::Space) {
+				input =  ControllerCommand::Swap;
+			}
+			if (event.key.code == sf::Keyboard::F4) {
+				reset();
+				input = ControllerCommand::NoInput;
+			}
+			if (event.key.code == sf::Keyboard::F1) {
+				input = ControllerCommand::Cheat;
+			}
+			if (event.key.code == sf::Keyboard::A) {
+				input =  ControllerCommand::ForceRaise;
+			}
+			return ControllerCommand::NoInput;
+		}
+
+		/*
 		switch (event.key.code)
 		{
 			//list of keys
@@ -242,8 +233,6 @@ ControllerCommand Game::handleInput(sf::Event event){
 		default: return ControllerCommand::NoInput; break;
 		}
 		break;
-	}
-	default: break;
-	}
-	
+		*/
+
 }

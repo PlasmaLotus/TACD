@@ -36,6 +36,7 @@ public:
 
 	void handleInputPressRelease(sf::Event event, Board & board);
 	void handleInput(sf::Event event, Board & board);
+	ControllerCommand handleInput(sf::Event event, ControllerCommand & input);
 	ControllerCommand handleInput(sf::Event event);
 
 private:

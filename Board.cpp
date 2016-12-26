@@ -32,7 +32,8 @@ stopTime(0),
 pauseTime(0),
 _match(false),
 _falling(false),
-cursor({ 4,2 }) {
+cursor({ 4,2 }),
+boardState(BoardState::Running){
 	std::srand(time(NULL));
 	initBoardRandom();
 	//init_Board(120);
@@ -292,6 +293,7 @@ void Board::init_Board(int nbBlocks = 30) {
 
 }
 
+/*Init Board with RandomBoardHandler*/
 void Board::initBoardRandom(){
 	std::srand(time(NULL));
 	/*Init Board*/
@@ -571,7 +573,40 @@ bool Board::handleInput() {
 	return false;
 	
 }
+bool Board::handleInput(ControllerCommand input) {
 
+	switch (input)
+	{
+		case ControllerCommand::Up:
+		case ControllerCommand::Down:
+		case ControllerCommand::Left:
+		case ControllerCommand::Right:
+		{
+			return moveCursor(input);
+			break;
+		}
+		case ControllerCommand::Swap:
+		{
+			//swap blocks
+			swapBlocks();
+			break;
+		}
+		case ControllerCommand::ForceRaise:
+		{
+			forceRaise = true;//force Raise
+			break;
+		}
+		case ControllerCommand::Pause:
+		{
+			betaValue++;
+			break;
+		}
+		case ControllerCommand::NoInput:
+		default: return false;
+	}
+	return true;
+
+}
 /*Verifies if two tiles match*/
 bool Board::_checkMatch(int row, int column, int row2, int column2)
 {
@@ -582,7 +617,8 @@ bool Board::_checkMatch(int row, int column, int row2, int column2)
 		if (tiles[row][column].isBlock() && tiles[row2][column2].isBlock())
 		{
 			//if both block states are normal
-			if (tiles[row][column].block.state == BlockState::normal && tiles[row2][column2].block.state == BlockState::normal)
+			if ((tiles[row][column].block.state == BlockState::normal || tiles[row][column].block.state == BlockState::landed ) && 
+				(tiles[row2][column2].block.state == BlockState::normal || tiles[row2][column2].block.state == BlockState::landed))
 			{
 				//if both have the same color
 				if (tiles[row][column].block.color == tiles[row2][column2].block.color)
@@ -600,7 +636,6 @@ bool Board::_checkMatch(int row, int column, int row2, int column2)
 bool Board::checkMatch(void) {
 	//returns true if a match has been made
 	bool match = false;
-	//int i = 1;
 
 	for (int i = 0; i < boardHeight; i++)
 	{
@@ -619,7 +654,7 @@ bool Board::checkMatch(void) {
 				match = true;
 				//interMatch = true;
 			}
-									
+			/*					
 			if(_checkMatch(i, j, i - 1, j)
 					&& _checkMatch(i, j, i - 2, j) )
 			{
@@ -631,7 +666,7 @@ bool Board::checkMatch(void) {
 				match = true;
 				//interMatch = true;
 			}
-				
+			*/
 
 			if( _checkMatch(i, j, i, j + 1) 
 					&& _checkMatch(i, j, i, j + 2) )
@@ -644,7 +679,7 @@ bool Board::checkMatch(void) {
 				match = true;
 				//interMatch = true;
 			}
-					
+			/*	
 			if( _checkMatch(i, j, i, j - 1) 
 					&& _checkMatch(i, j, i, j - 2) )
 			{
@@ -656,6 +691,7 @@ bool Board::checkMatch(void) {
 				match = true;
 				//interMatch = true;
 			}
+			*/
 
 			//if (interMatch)
 			if (match)
@@ -675,184 +711,6 @@ bool Board::checkMatch(void) {
 	_match = match;
 	return match;
 }
-/*
-bool Board::_BetacheckMatch2(int row, int column, int row2, int column2) {
-	if (_checkMatch(row, column, row2, column2))
-	{
-		return _BetacheckMatch2()
-	}
-}
-*/
-
-bool Board::BetacheckMatch(void)
-{
-	bool match = false;
-	std::list<Position> matchList;
-	for (int i = 0; i < boardHeight - 3; i++)
-	{
-		for (int j = 0; j < boardWidth - 3; j++)
-		{
-
-			if (_checkMatch(i, j, (i + 1), j)
-				&& _checkMatch(i, j, (i + 2), j))
-			{
-				matchList.push_back({ i, j });
-				matchList.push_back({ i+1, j });
-				matchList.push_back({ i+2, j });
-				match = true;
-			}
-
-			if (_checkMatch(i, j, i, j + 1)
-				&& _checkMatch(i, j, i, j + 2))
-			{
-				matchList.push_back({ i, j });
-				matchList.push_back({ i, j+1 });
-				matchList.push_back({ i, j+2 });
-				match = true;
-			}
-
-		}
-	}
-	//if (vecList.)
-
-	//matchList.sort(Position::sort);
-	//matchList.unique(Position::equals);
-	//int combo = 0;
-	while (!matchList.empty())
-	{
-		//Position p = matchList.front();
-		Position p;
-		//p.row = matchList.front().row;
-		//p.column = matchList.front().column;
-		p = matchList.front();
-		//matchList.remove(p);
-		tiles[p.row][p.column].setBlockMatching(true);
-		matchList.pop_front();
-		//combo++;
-	}
-
-	if (match)
-	{
-		isChain = true;
-	}
-
-	_match = match;
-	return match;
-}
-
-bool Board::BetacheckMatch3(void)
-{
-	bool match = false;
-	for (int i = 0; i < boardHeight - 3; i++)
-	{
-		for (int j = 0; j < boardWidth - 3; j++)
-		{
-
-			//4 steps	
-			if (_checkMatch(i, j, (i + 1), j)
-				&& _checkMatch(i, j, (i + 2), j))
-			{
-				tiles[i][j].setBlockMatching(true);
-				//if (i + 1 < boardHeight)
-					tiles[i + 1][j].setBlockMatching(true);
-				//if (i + 2 < boardHeight)
-					tiles[i + 2][j].setBlockMatching(true);
-					int offset = 3;
-					while (_checkMatch(i, j, (i + offset), j)) {
-						tiles[i + offset][j].setBlockMatching(true);
-						offset++;
-					}
-				//_BetacheckMatch2(i, j, i + 3)
-				match = true;
-			}
-
-			if (_checkMatch(i, j, i, j + 1)
-				&& _checkMatch(i, j, i, j + 2))
-			{
-				tiles[i][j].block.setMatching(true);
-				//if (j + 1 < boardSize)
-					tiles[i][j + 1].setBlockMatching(true);
-				//if (j + 2 < boardSize)
-					tiles[i][j + 2].setBlockMatching(true);
-				match = true;
-				int offset = 3;
-				while (_checkMatch(i, j, i, (j + offset))) {
-					tiles[i][j + offset].setBlockMatching(true);
-					offset++;
-				}
-			}
-
-		}
-	}
-	_match = match;
-	return match;
-}
-bool Board::BetacheckMatch2(void) {
-	Position pos;
-	bool match = false;
-	std::stack<Position> newStack;
-
-	for (int i = 0; i < boardHeight; i++)
-	{
-		for (int j = 0; j < boardWidth; j++)
-		{
-			//4 steps
-			if (_checkMatch(i, j, (i + 1), j)
-				&& _checkMatch(i, j, (i + 2), j))
-			{
-				//tiles[i][j].setBlockMatching(true);
-				newStack.push({ i, j });
-				if (i + 1 < boardHeight)
-					newStack.push({ i+1, j });
-				if (i + 2 < boardHeight)
-					newStack.push({ i + 2, j });
-				match = true;
-			}
-
-			if (_checkMatch(i, j, i - 1, j)
-				&& _checkMatch(i, j, i - 2, j))
-			{
-				newStack.push({ i, j });
-				if (i - 1 >= 0)
-					newStack.push({ i-1, j });
-				if (i - 2 >= 0)
-					newStack.push({ i-2, j });
-				match = true;
-			}
-
-			if (_checkMatch(i, j, i, j + 1)
-				&& _checkMatch(i, j, i, j + 2))
-			{
-				newStack.push({ i, j });
-				if (j + 1 < boardSize)
-					newStack.push({ i, j+1 });
-				if (j + 2 < boardSize)
-					newStack.push({ i, j+2 });
-				match = true;
-			}
-
-			if (_checkMatch(i, j, i, j - 1)
-				&& _checkMatch(i, j, i, j - 2))
-			{
-				newStack.push({ i, j });
-				if (j - 1 >= 0)
-					newStack.push({ i, j-1 });
-				if (j - 2 >= 0)
-					newStack.push({ i, j-2 });
-				match = true;
-			}
-		}
-	}
-	
-	while (!newStack.empty())
-	{
-		pos = newStack.top();
-		newStack.pop();
-		tiles[pos.row][pos.column].setBlockMatching(true);
-	}
-	_match = match;
-	return match;
-}
 
 bool Board::_checkMatchbufferRow(int column, int column2)
 {
@@ -869,7 +727,6 @@ bool Board::_checkMatchbufferRow(int column, int column2)
 
 	return false;
 }
-
 bool Board::checkMatchbufferRow(void) {
 
 	bool match = false;
@@ -910,7 +767,6 @@ bool Board::checkAllMatches(void) {
 	matchBoard = checkMatch();
 	matchStack = checkMatchbufferRow();
 	return (matchBoard || matchStack);
-
 }
 
 bool Board::isMatch(void) {
@@ -930,6 +786,15 @@ bool Board::isMatch(void) {
 	return false;
 }
 
+bool Board::blocksOnTopRow(void)
+{
+	for (int j = 0; j < boardSize; j++)
+	{
+		if (tiles[TOP_ROW][j].isBlock() || tiles[TOP_ROW][j].isGarbage())
+			return true;
+	}
+	return false;
+}
 /*Handle the raising of the Stack*/
 void Board::handleBufferRow() {
 
@@ -942,66 +807,66 @@ void Board::handleBufferRow() {
 	*/
 
 	//if (!_match && !_swap)//!_activeBlocks
-	if (stackRaiseEnabled)
+	if (boardState = BoardState::Running)
 	{
-		if (!_stop)
+		if (stackRaiseEnabled)
 		{
-			/*Add pause timer here
-				forceRaise should override stoptime*/
-			bufferRowTics++;
-
-			if (forceRaise)
+			if (!_stop)
 			{
-				bufferRowTics = 0;
-				bufferRowOffset++;
-			}
-			if (bufferRowTics > bufferRowTotalTics / bufferRowOffsetTotal)//or >=
-			{
-				bufferRowOffset++;
-				bufferRowTics = 0;
-			}
-
-			if (bufferRowOffset >= bufferRowOffsetTotal)
-			{
-				for (int i = BOARD_HEIGHT - 2; i >= 0; i--)
+					/*Add pause timer here
+						forceRaise should override stoptime*/
+				if (!blocksOnTopRow())
 				{
-					for (int j = 0; j < boardWidth; j++)
+
+					bufferRowTics++;
+
+					if (forceRaise)
 					{
-						tiles[i + 1][j] = tiles[i][j];
-
-						if (i == 0)
-						{
-							tiles[0][j] = bufferRow[j];
-						}
+						bufferRowTics = 0;
+						bufferRowOffset++;
 					}
+					if (bufferRowTics > bufferRowTotalTics / bufferRowOffsetTotal)//or >=
+					{
+						bufferRowOffset++;
+						bufferRowTics = 0;
+					}
+
+					/*swap rows*/
+					if (bufferRowOffset >= bufferRowOffsetTotal)
+					{
+						for (int i = BOARD_HEIGHT - 2; i >= 0; i--)
+						{
+							for (int j = 0; j < boardWidth; j++)
+							{
+								tiles[i + 1][j] = tiles[i][j];
+								if (i == 0)
+								{
+									tiles[0][j] = bufferRow[j];
+								}
+							}
+						}
+						bufferRowTics = 0;
+						bufferRowOffset = 0;
+						if (cursor.row < TOP_ROW)
+						{
+							cursor.row++;
+						}
+						bufferRowNewbufferRow();
+						forceRaise = false;//stop force raise
+					}
+
 				}
-				bufferRowTics = 0;
-				bufferRowOffset = 0;
-				if (cursor.row < TOP_ROW)
+				else
 				{
-					cursor.row++;
+					//make me lose the game
 				}
-				bufferRowNewbufferRow();
-				forceRaise = false;//stop force raise
 			}
-
-			/*
-			if (_stackRaiseForced) {
-			++_score;
+			else
+			{
+				forceRaise = false;
 			}
-
-			_stackRaiseForced = false;
-			if (_cursorY <= 10) {
-			++_cursorY;
-			}
-			*/
-		}
-		else
-		{
-			forceRaise = false;
 		}
 	}
-
 }
 
 /*Manage the state of all falling and soon to be falling blocks*/
@@ -1120,6 +985,9 @@ void Board::handleFallingBlocks() {
 	}
 }
 
+bool Board::garbageBlockCanFall(GarbageBlock &gb) {
+
+}
 /*Actually Swap tiles */
 void Board::_swapBlocks(int row, int column, int row2, int column2){
 	Tile interTile;
@@ -1449,37 +1317,30 @@ void Board::tick() {
 	_eventHandler->endTick();
 }
 */
-
-void Board::run(ControllerCommand input) {
+void Board::run(ControllerCommand input)
+{
+	handleInput(input);
+	run();
+}
+void Board::run() {
 	initTics();
 	
-	handleInput();
+	//handleInput();
 	//handleInput(input);
+	/*
 	while (!inputs.empty())
 	{
 		inputs.pop();
 	}
-
+	*/
 	handleSwappingBlocks();
-
-
-
 	handleMatchingBlocks();//switch block to matching state
-	
-	
 	handleFallingBlocks();//blocks fall
-
-
 	checkMatch();//find all block that match
 	//BetacheckMatch();
 
-
 	/*Blocks Falling needs to be done after matches, so that they interact on the next frame*/
 	/*Blocks are idle for 1 frame before they can match*/
-
-	//BetacheckMatch();
-	
-	//display()
 	handleBufferRow();
 }
 
@@ -1522,49 +1383,3 @@ When clearing blocks, make the blocks on top inChain
 the blocks should dissapear when cleared, but blocks on top stay since the block is clearing
 create more initial boards
 *********/
-
-
-bool Board::Position::equals(const Position &p1, const Position &p2)
-{
-	if (p1.column == p2.column && p1.row == p2.row)
-	{
-		return true;
-	}
-	return false;
-}
-
-bool Board::Position::operator==(const Position p2)
-{
-	if (column == p2.column && row == p2.row)
-	{
-		return true;
-	}
-	return false;
-}
-bool Board::Position::sort(const Position &p1, const Position &p2)
-{
-	//return true if ordered
-	if (p1.row > p2.row)
-	{
-		return true;
-	}
-	else if (p1.row == p2.row)
-	{
-		if (p1.column > p2.column)
-		{
-			return true;
-		}
-		else if (p1.column == p2.column)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	else
-	{
-		return false;
-	}
-}

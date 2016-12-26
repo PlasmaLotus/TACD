@@ -7,8 +7,8 @@ Updated Nov 25, 2016
 #define _GeneralBoardEnum_
 
 #define FPS 60
-#define TACD_DIRECTORY "Y:/TACD C++/"
-//#define TACD_DIRECTORY "C:/Users/Lee-Stenio/Panel Pop/TACD C++/"
+//#define TACD_DIRECTORY "Y:/TACD C++/"
+#define TACD_DIRECTORY "C:/Users/Lee-Stenio/Panel Pop/TACD C++/"
 
 
 enum BlockType { block, air, garbage };

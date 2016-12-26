@@ -28,11 +28,13 @@ public:
 	//int bufferRowTics;
 	
 	//struct cursor
+	enum BoardState{Countdown, Running, Win, Lose};
+	BoardState boardState;
 	struct Position {
 		int row, column;
-		bool equals(const Position &p1, const Position &p2);
-		bool operator==(const Position p2);
-		bool sort(const Position &p1, const Position &p2);
+		//bool equals(const Position &p1, const Position &p2);
+		//bool operator==(const Position p2);
+		//bool sort(const Position &p1, const Position &p2);
 	};
 	Position cursor;
 
@@ -78,7 +80,6 @@ public:
 	void addInput(ControllerCommand d);
 
 	bool handleInput();
-
 	bool handleInput(ControllerCommand input);
 
 	bool _checkMatch(int row, int column, int row2, int column2);
@@ -90,6 +91,7 @@ public:
 	bool checkMatchbufferRow(void);
 	bool checkAllMatches(void);
 	bool isMatch(void);
+	bool blocksOnTopRow(void);
 	void handleBufferRow();
 	void handleFallingBlocks();
 	void _swapBlocks(int row, int column, int row2, int column2);
@@ -123,10 +125,10 @@ private:
 	
 	//static const char FPS = 60;
 	//int boardLevel = 5;
-	static const char bufferRowOffsetTotal = 16;
-	char bufferRowTics;
+	static const int bufferRowOffsetTotal = 16;//Amount of total steps for each bufferRow raise
+	int bufferRowTics;//current step of the bufferRow
 	//char bufferRowOffset;
-	int bufferRowTotalTics = FPS * 5;
+	int bufferRowTotalTics = FPS * 5;//Amount of tics total to raise a bufferRow from 0 to 100%
 		//6 secs on SHard stage 1
 		//2.45 /sec on SHard
 		//4.75 secs on vs level 5
@@ -143,7 +145,7 @@ private:
 	/*Swap, float, and fall 1 tile takes 10 frames*/
 
 	/*
-	All input takes 2 frames to register, and they activage on the next frame
+	All input takes 2 frames to register, and they activate on the next frame
 	*/
 
 	char betaValue = 0;
@@ -171,12 +173,6 @@ private:
 
 	/*In total, Swap, clear, pop and 3tile fall takes slightly more than 1 sec*/
 
-
-
-	struct MatchedBlocks {
-		std::stack<Position> positionList;
-		char matchCounter;
-	};
 
 };
 

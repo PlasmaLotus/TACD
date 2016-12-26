@@ -10,9 +10,13 @@ enum GarbageColor{black, white};
 class GarbageBlock {
 
 public:
+	int row, col;//coordonates of the lower right corner
 	int height;
 	int size;
 	GarbageColor color;
+	GarbageBlock();
+	GarbageBlock(int row, int col, int height, int size);
+	~GarbageBlock();
 
 };
 
