@@ -1,6 +1,6 @@
 /*
 Created by PlasmaLotus
-Updated Nov 25, 2016
+Updated Dec 25, 2016
 */
 
 #include <time.h>
@@ -986,7 +986,13 @@ void Board::handleFallingBlocks() {
 }
 
 bool Board::garbageBlockCanFall(GarbageBlock &gb) {
-
+	for (int j = gb.col; j < gb.col + gb.size; j++)
+	{
+		if (tiles[gb.row - 1][j].isBlock() || tiles[gb.row - 1][j].isGarbage())
+		{
+			return false;
+		}
+	}
 }
 /*Actually Swap tiles */
 void Board::_swapBlocks(int row, int column, int row2, int column2){

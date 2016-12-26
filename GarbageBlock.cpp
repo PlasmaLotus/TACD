@@ -1,3 +1,8 @@
+/*
+Created by PlasmaLotus
+Updated Dec 25, 2016
+*/
+
 #include "GarbageBlock.h"
 
 GarbageBlock::GarbageBlock()

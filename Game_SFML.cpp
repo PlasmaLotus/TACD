@@ -1,6 +1,6 @@
 /*
 Created by PlasmaLotus
-Updated Nov 25, 2016
+Updated Dec 25, 2016
 */
 
 #include "Game_SFML.h"
@@ -34,8 +34,6 @@ void Game::setBoardTextures(Board board) {
 	{
 		for (int j = 0; j < BOARD_WIDTH; j++)
 		{
-			textureIndexX = 7 * TILE_SIZE;
-			textureIndexY = 0;
 
 			textureIndexX = spriteColorInt(board.tiles[i][j].block.color)*TILE_SIZE;
 			textureIndexY = 0;
@@ -70,7 +68,7 @@ void Game::setBoardTextures(Board board) {
 			}
 			else if (board.tiles[i][j].isGarbage())
 			{
-				//TODO: code garbage blocks
+				boardSprites[i][j].setTextureRect(sf::IntRect(spriteColorInt(BlockColor::none) * TILE_SIZE, textureIndexY, TILE_SIZE, TILE_SIZE));
 			}
 			
 		}

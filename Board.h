@@ -1,6 +1,6 @@
 /*
 Created by PlasmaLotus
-Updated Nov 25, 2016
+Updated Dec 25, 2016
 */
 
 #include <stack>
@@ -94,6 +94,7 @@ public:
 	bool blocksOnTopRow(void);
 	void handleBufferRow();
 	void handleFallingBlocks();
+	bool garbageBlockCanFall(GarbageBlock & gb);
 	void _swapBlocks(int row, int column, int row2, int column2);
 	void handleSwappingBlocks();
 	void handleMatchingBlocks();
