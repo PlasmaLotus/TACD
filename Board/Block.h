@@ -8,14 +8,12 @@ Updated Dec 25, 2016
 #ifndef _Block_
 #define _Block_
 
-
 class Block {
 public:
 
 	BlockColor color;
 	BlockState state;
 	BlockExtraState stateExtra;
-	//BlockType type;
 	
 	bool inChain;
 	bool matching;

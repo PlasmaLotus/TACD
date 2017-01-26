@@ -16,13 +16,11 @@ swapHeldCounter(0),
 mode(ControlMode::Keyboard),
 board(b)
 {
-    //player = tank;
 	config.loadConfig("controllerConfig.ini");
 }
 
 Controller::~Controller()
 {
-    
 }
 
 void Controller::updateConfig(){
@@ -32,11 +30,9 @@ void Controller::updateConfig(){
             mode = ControlMode::Joystick;
 			config.setJoystickNumber(0);
 			//buttonHeld = (bool*) malloc(sf::Joystick::getButtonCount(0)*sizeof(bool));
-            //config = new JoystickConfig:
         }
         else
         {
-            //config = new KeyboardConfig;
         }
     }
     else if (mode == ControlMode::Joystick){
@@ -90,7 +86,6 @@ void Controller::handleInput(){
 			}
 
 			/*Check Axis*/
-
 			for (int i = 0; i < sf::Joystick::AxisCount; i++)
 			{
 				sf::Joystick::Axis axis = static_cast<sf::Joystick::Axis>(i);
@@ -104,34 +99,7 @@ void Controller::handleInput(){
 			{
 				handleCommand(config.getCommand(sf::Joystick::Axis::PovX, sf::Joystick::getAxisPosition(js, sf::Joystick::Axis::PovX)));
 			}
-			if (sf::Joystick::hasAxis(js, sf::Joystick::Axis::PovY))
-			{
-				handleCommand(config.getCommand(sf::Joystick::Axis::PovY, sf::Joystick::getAxisPosition(js, sf::Joystick::Axis::PovY)));
-			}
-			if (sf::Joystick::hasAxis(js, sf::Joystick::Axis::R))
-			{
-				handleCommand(config.getCommand(sf::Joystick::Axis::R, sf::Joystick::getAxisPosition(js, sf::Joystick::Axis::R)));
-			}
-			if (sf::Joystick::hasAxis(js, sf::Joystick::Axis::U))
-			{
-				handleCommand(config.getCommand(sf::Joystick::Axis::U, sf::Joystick::getAxisPosition(js, sf::Joystick::Axis::U)));
-			}
-			if (sf::Joystick::hasAxis(js, sf::Joystick::Axis::V))
-			{
-				handleCommand(config.getCommand(sf::Joystick::Axis::V, sf::Joystick::getAxisPosition(js, sf::Joystick::Axis::V)));
-			}
-			if (sf::Joystick::hasAxis(js, sf::Joystick::Axis::X))
-			{
-				handleCommand(config.getCommand(sf::Joystick::Axis::X, sf::Joystick::getAxisPosition(js, sf::Joystick::Axis::X)));
-			}
-			if (sf::Joystick::hasAxis(js, sf::Joystick::Axis::Y))
-			{
-				handleCommand(config.getCommand(sf::Joystick::Axis::Y, sf::Joystick::getAxisPosition(js, sf::Joystick::Axis::Y)));
-			}
-			if (sf::Joystick::hasAxis(js, sf::Joystick::Axis::Z))
-			{
-				handleCommand(config.getCommand(sf::Joystick::Axis::Z, sf::Joystick::getAxisPosition(js, sf::Joystick::Axis::Z)));
-			}
+			...
 			*/
             break;
         }
@@ -144,20 +112,36 @@ void Controller::handleInput(){
 void Controller::handleCommand(ControllerCommand command){
     /*Apply action on the player dependant on the command*/
 
-
     switch (command) 
     {
         case ControllerCommand::Up :
+		{
+			if (board != NULL) {
+				board->moveCursorUp();
+			}
+			break;
+		}
         case ControllerCommand::Down :
+		{
+			if (board != NULL) {
+				board->moveCursorDown();
+			}
+			break;
+		}
         case ControllerCommand::Left :
+		{
+			if (board != NULL) {
+				board->moveCursorLeft();
+			}
+			break;
+		}
         case ControllerCommand::Right :
         {
             if (board != NULL){
-				board->moveCursor(command);
+				board->moveCursorRight();
             }
 			break;
         }
-        
         case ControllerCommand::Swap :
         {
             if (board != NULL){
@@ -187,12 +171,13 @@ void Controller::handleCommand(ControllerCommand command){
 
 		case ControllerCommand::Cheat:
 		{
-			//board->Cheat();
+			if (board != NULL) {
+				//board->Cheat();
+			}
 			break;
 		}
         case ControllerCommand::NoInput :
         default: break;
-        
     }
 }
     

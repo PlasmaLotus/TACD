@@ -142,16 +142,13 @@ void Board::displayBoard()
 			}
 		}
 	}
-	//int cursorLocation2 = -1;
-	//prints it backwards 
-	printf("Board:\n Size: %d\n ", sizeof(Board));
-	//printf(" ");
+
 	//for (int i = 0; i < boardHeight; i++)
 	for (int i = BOARD_HEIGHT - 1; i >= 0;i--)
 	{
 		for (int j = 0; j < boardWidth; j++)
 		{
-			//printf(" ");
+			
 			if (i == cursor.row && (j == cursor.column || j == cursor.column + 1)) {
 				SetConsoleTextAttribute(GetStdHandle(STD_INPUT_HANDLE), 0x5B);
 			}
@@ -445,30 +442,6 @@ bool Board::swapBlocks() {
 			
 		}
 		
-
-		/*
-		if (tiles[cursor.row][cursor.column].block.state == BlockState::falling)
-		{
-			if (tiles[cursor.row][cursor.column + 1].type == BlockType::block && !swappable(cursor.row, cursor.column + 1)){
-				/*Cannot be swapped in air unless
-				return false;
-			}
-		}
-		else if (tiles[cursor.row][cursor.column + 1].block.state == BlockState::falling)
-		{
-			if (tiles[cursor.row][cursor.column].type == BlockType::block && !swappable(cursor.row, cursor.column)) {
-				//Cannot be swapped in air unless
-				return false;
-			}
-		}
-		*/
-
-		/*
-			if ((tiles[cursor.row][cursor.column + 1].type == BlockType::block && !swappable(cursor.row, cursor.column + 1)) || (tiles[cursor.row][cursor.column - 1].type == BlockType::block && !swappable(cursor.row, cursor.column - 1))) {
-				//Cannot be swapped in air unless 
-				return false;
-			}
-		*/
 		//actual block swapping
 		_swapBlocks(cursor.row, cursor.column, cursor.row, cursor.column + 1);
 		
@@ -491,56 +464,68 @@ bool Board::swapBlocks() {
 }
 
 bool Board::moveCursor(ControllerCommand d) {
-	//Gets a controller commant (not even done yet) and moves the cursor around the board
 	switch (d)
 	{
 		case Up:
 		{
-		if (cursor.row < TOP_ROW)
-			{
-				cursor.row++;
-				return true;
-			}
-			else {
-				return false;
-			}
+			return moveCursorUp();
 		}
 		case Down:
 		{
-			if (cursor.row > 0)
-			{
-				cursor.row--;
-			return true;
-			}
-			else {
-				return false;
-			}
+			return moveCursorDown();
 		}
 		case Left:
 		{
-			if (cursor.column > 0)
-			{
-				cursor.column--;
-				return true;
-			}
-			else {
-				return false;
-			}
+			return moveCursorLeft();
 		}
 		case Right:
 		{
-			if (cursor.column < BOARD_WIDTH -2)
-			{
-				cursor.column++;
-				return true;
-			}
-			else {
-				return false;
-			}
+			return moveCursorRight();
 		}
 		default: return false;
 	}
 }
+bool Board::moveCursorUp() {
+	if (cursor.row < TOP_ROW)
+	{
+		cursor.row++;
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+bool Board::moveCursorDown() {
+	if (cursor.row > 0)
+	{
+		cursor.row--;
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+bool Board::moveCursorLeft() {
+	if (cursor.column > 0)
+	{
+		cursor.column--;
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+bool Board::moveCursorRight() {
+	if (cursor.column < BOARD_WIDTH - 2)
+	{
+		cursor.column++;
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 void Board::addInput(ControllerCommand d) {
 	inputs.push(d);
 }

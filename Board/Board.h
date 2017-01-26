@@ -77,6 +77,11 @@ public:
 
 	bool moveCursor(ControllerCommand d);
 
+	bool moveCursorUp();
+	bool moveCursorDown();
+	bool moveCursorLeft();
+	bool moveCursorRight();
+
 	void addInput(ControllerCommand d);
 
 	bool handleInput();

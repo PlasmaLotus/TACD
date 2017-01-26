@@ -17,10 +17,6 @@ Updated Dec 25, 2016
 #include <stdio.h>
 #include <stdlib.h>
 
-//#include <SDL.h>
-//#include "Game.h"
-
-
 void gotoxy(int x, int y);
 
 #endif // !__Main.h__
