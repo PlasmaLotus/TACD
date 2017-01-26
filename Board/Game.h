@@ -3,9 +3,10 @@ Created by PlasmaLotus
 Updated Dec 25, 2016
 */
 
-#include "Game_SFML.h"
+#include "GameRenderer.h"
 #include "Board.h"
 #include "TestBoard.h"
+#include "../Controller/Controller.h"
 
 #ifndef _Game_
 #define _Game_
@@ -16,12 +17,14 @@ class Game{
 	
 public:
 
-	//Board b1;
-	TestBoard b1;
+	Board b1;
+	//TestBoard b1;
 	Board b2;
-	sf::RenderWindow window;
+	Controller p1Controller;
+	sf::RenderWindow *window;
 
 	Game();
+	Game(sf::RenderWindow &w);
 	~Game();
 	/*Game Time*/
 	int frame;
@@ -32,7 +35,10 @@ public:
 
 	void reset();
 	void init();
+	void initController();
 	void run();
+
+	void tick();
 
 	void handleInputPressRelease(sf::Event event, Board & board);
 	void handleInput(sf::Event event, Board & board);
@@ -43,6 +49,8 @@ private:
 	static const int BOARD_WIDTH = 6;
 	static const int BOARD_HEIGHT = 12;
 
+	void initRenderer();
+
 	int spriteColorInt(BlockColor color);
 
 	void setBoardTextures(Board board);
@@ -50,6 +58,8 @@ private:
 	void setCursorPosition(Board board);
 
 	void setBlockPositions(Board board);
+
+	void clear();
 
 	void draw();
 	void display();

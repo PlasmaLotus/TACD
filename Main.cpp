@@ -4,12 +4,12 @@ Updated Dec 25, 2016
 */
 
 #include "Main.h"
-#include "Game.h"
-#include "Block.h"
-#include "Board.h"
-#include "Tile.h"
-#include "GeneralEnum.h"
-#include "Game_SFML.h"
+#include "Board/Game.h"
+#include "Board/Block.h"
+#include "Board/Board.h"
+#include "Board/Tile.h"
+#include "Board/GeneralEnum.h"
+#include "Board/GameRenderer.h"
 
 void gotoxy(int x, int y)
 {
@@ -22,7 +22,8 @@ void gotoxy(int x, int y)
 
 int main(int argc, char *argv[]) {
 	
-	Game game;
+	sf::RenderWindow window(sf::VideoMode(800, 600), "TACD");
+	Game game(window);
 	game.init();
 	game.run();
 

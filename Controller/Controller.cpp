@@ -1,18 +1,20 @@
 #include "Controller.h"
 
-
 /*The controller recieves input from a Keyboard or Joystick and outputs Commands to execute*/
 
-
 Controller::Controller():
+swapHeld(false),
+swapHeldCounter(0),
 mode(ControlMode::Keyboard)
 {
 	config.loadConfig("controllerConfig.ini");
 }
 
-Controller::Controller(Tank* tank):
+Controller::Controller(Board* b) :
+swapHeld(false),
+swapHeldCounter(0),
 mode(ControlMode::Keyboard),
-player(tank)
+board(b)
 {
     //player = tank;
 	config.loadConfig("controllerConfig.ini");
@@ -28,6 +30,8 @@ void Controller::updateConfig(){
         if (sf::Joystick::isConnected(0))
         {
             mode = ControlMode::Joystick;
+			config.setJoystickNumber(0);
+			//buttonHeld = (bool*) malloc(sf::Joystick::getButtonCount(0)*sizeof(bool));
             //config = new JoystickConfig:
         }
         else
@@ -36,6 +40,11 @@ void Controller::updateConfig(){
         }
     }
     else if (mode == ControlMode::Joystick){
+		
+		if (!sf::Joystick::isConnected(config.getJoystickNumber()))
+		{
+			mode = Keyboard;
+		}
         //config = new JoystickConfig;
         //handle switching to keyboard mode
     }
@@ -46,7 +55,11 @@ void Controller::updateConfig(){
 void Controller::handleInput(){
     
     //InputHandler inputHandler;
-    
+	if (--swapHeldCounter < 0)
+	{
+		swapHeld = false;
+	}
+
     switch (mode)
     {
         case Keyboard:
@@ -62,25 +75,6 @@ void Controller::handleInput(){
 					handleCommand(config.getCommand(key));
 				}
 			}
-
-			/*
-            if (sf::Keyboard::isKeyPressed(config.KeyboardUp){
-                player->moveUp();
-            }
-            if (sf::Keyboard::isKeyPressed(config.KeyboardkDown)){
-                player->moveDown();
-            }
-            if (sf::Keyboard::isKeyPressed(config.KeyboardLeft)){
-                player->rotateLeft();
-            }
-            if (sf::Keyboard::isKeyPressed(config.KeyboardRight)){
-                player->rotateRight();
-            }
-            */
-            
-            //if (sf::Keyboard::isKeyPressed(config.KeyboardActionA)){
-                //shoot things}
-            
             break;
         }
         case Joystick:
@@ -96,6 +90,16 @@ void Controller::handleInput(){
 			}
 
 			/*Check Axis*/
+
+			for (int i = 0; i < sf::Joystick::AxisCount; i++)
+			{
+				sf::Joystick::Axis axis = static_cast<sf::Joystick::Axis>(i);
+				if (sf::Joystick::hasAxis(js, axis))
+				{
+					handleCommand(config.getCommand(axis, sf::Joystick::getAxisPosition(js, axis)));
+				}
+			}
+			/*
 			if (sf::Joystick::hasAxis(js, sf::Joystick::Axis::PovX))
 			{
 				handleCommand(config.getCommand(sf::Joystick::Axis::PovX, sf::Joystick::getAxisPosition(js, sf::Joystick::Axis::PovX)));
@@ -128,8 +132,7 @@ void Controller::handleInput(){
 			{
 				handleCommand(config.getCommand(sf::Joystick::Axis::Z, sf::Joystick::getAxisPosition(js, sf::Joystick::Axis::Z)));
 			}
-
-            //if (config.JoystickUp.buttonType)
+			*/
             break;
         }
         default: break;
@@ -138,56 +141,61 @@ void Controller::handleInput(){
     return;
 }
 /*Act accordingly to the needed commands*/
-void Controller::handleCommand(ControlKey command){
+void Controller::handleCommand(ControllerCommand command){
     /*Apply action on the player dependant on the command*/
+
+
     switch (command) 
     {
-        case ControlKey::Up :
+        case ControllerCommand::Up :
+        case ControllerCommand::Down :
+        case ControllerCommand::Left :
+        case ControllerCommand::Right :
         {
-            if (player != NULL){
-                player->moveUp();
+            if (board != NULL){
+				board->moveCursor(command);
             }
+			break;
         }
         
-        case ControlKey::Down :
+        case ControllerCommand::Swap :
         {
-            if (player != NULL){
-                player->moveDown();
+            if (board != NULL){
+				/*
+				if (!swapHeld)
+				{
+					board->swapBlocks();
+					swapHeld = true;
+					swapHeldCounter = 3;
+				}
+				else
+				{
+					swapHeldCounter = 3;
+				}
+				*/
+				board->swapBlocks();
             }
+			break;
         }
-        
-        case ControlKey::Left :
-        {
-            if (player != NULL){
-                player->rotateLeft();
-            }
-        }
-        
-        case ControlKey::Right :
-        {
-            if (player != NULL){
-                player->rotateRight();
-            }
-        }
-        
-        case ControlKey::Shoot :
-        {
-            if (player != NULL){
-                //player->shoot();
-            }
-        }
-		case ControlKey::Special :
+		case ControllerCommand::ForceRaise :
 		{
-			if (player != NULL) {
-				//player->shootSpecial();
+			if (board != NULL) {
+				board->forceRaise();
 			}
+			break;
 		}
-        case ControlKey::NoInput :
+
+		case ControllerCommand::Cheat:
+		{
+			//board->Cheat();
+			break;
+		}
+        case ControllerCommand::NoInput :
         default: break;
         
     }
 }
     
-void Controller::setPlayer(Tank* tank){
-        player = tank;
+void Controller::setBoard(Board* b){
+        board = b;
 }

@@ -6,7 +6,7 @@ Updated Dec 25, 2016
 #ifndef _GeneralBoardEnum_
 #define _GeneralBoardEnum_
 
-#define FPS 10
+#define FPS 60
 
 
 enum BlockType { block, air, garbage };

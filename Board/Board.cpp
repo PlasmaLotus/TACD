@@ -25,7 +25,7 @@ isChain(false),
 chainCounter(1),
 comboCounter(0),
 _combo(false),
-forceRaise(false),
+forcedRaise(false),
 _activeBlocks(false),
 _stop(false),
 stopTime(0),
@@ -45,7 +45,15 @@ Board::~Board(){
 void Board::reset()
 {
 	clearAll();
+	bufferRowTics = 0;
+	bufferRowOffset = 0;
+	resetRNG();
 	initBoardRandom();
+}
+
+void Board::resetRNG() {
+	std::srand(time(NULL));
+	bufferRowNewbufferRow();
 }
 
 void Board::clearAll() {
@@ -559,7 +567,7 @@ bool Board::handleInput() {
 				}
 			case ControllerCommand::ForceRaise :
 				{
-					forceRaise = true;//force Raise
+					forceRaise();//force Raise
 					break;
 				}
 			case ControllerCommand::Pause:
@@ -593,7 +601,7 @@ bool Board::handleInput(ControllerCommand input) {
 		}
 		case ControllerCommand::ForceRaise:
 		{
-			forceRaise = true;//force Raise
+			forceRaise();//force Raise
 			break;
 		}
 		case ControllerCommand::Pause:
@@ -607,6 +615,10 @@ bool Board::handleInput(ControllerCommand input) {
 	}
 	return true;
 
+}
+
+void Board::forceRaise() {
+	forcedRaise = true;
 }
 /*Verifies if two tiles match*/
 bool Board::_checkMatch(int row, int column, int row2, int column2)
@@ -821,7 +833,7 @@ void Board::handleBufferRow() {
 
 					bufferRowTics++;
 
-					if (forceRaise)
+					if (forcedRaise)
 					{
 						bufferRowTics = 0;
 						bufferRowOffset++;
@@ -853,7 +865,7 @@ void Board::handleBufferRow() {
 							cursor.row++;
 						}
 						bufferRowNewbufferRow();
-						forceRaise = false;//stop force raise
+						forcedRaise = false;//stop force raise
 					}
 
 				}
@@ -864,7 +876,7 @@ void Board::handleBufferRow() {
 			}
 			else
 			{
-				forceRaise = false;
+				forcedRaise = false;
 			}
 		}
 	}

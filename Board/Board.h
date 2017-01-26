@@ -45,7 +45,7 @@ public:
 	int boardWidth;
 	char bufferRowOffset;
 
-	bool forceRaise;
+	bool forcedRaise;
 	bool isChain;
 	int chainCounter;
 	int comboCounter;
@@ -82,6 +82,8 @@ public:
 	bool handleInput();
 	bool handleInput(ControllerCommand input);
 
+	void forceRaise();
+
 	bool _checkMatch(int row, int column, int row2, int column2);
 	bool checkMatch(void);
 	bool BetacheckMatch3(void);
@@ -109,6 +111,8 @@ public:
 	void run();
 	void run(ControllerCommand input);
 	void reset();
+
+	void resetRNG();
 
 	void clearAll();
 

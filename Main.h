@@ -7,7 +7,7 @@ Updated Dec 25, 2016
 
 #ifndef __Main__
 #define __Main__
-#include "GeneralEnum.h"
+#include "Board/GeneralEnum.h"
 
 #include <iostream>
 #include <iomanip>
@@ -19,7 +19,7 @@ Updated Dec 25, 2016
 
 //#include <SDL.h>
 //#include "Game.h"
-//#include "Main.h"
+
 
 void gotoxy(int x, int y);
 

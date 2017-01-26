@@ -99,7 +99,7 @@ void TestBoard::reset()
 
 TestBoard::TestBoard()
 {
-	strcat_s(path, "Board/TestBoards/Board6.pop");
+	strcat_s(path, "assets/TestBoards/Board6.pop");
 
 	initBoardFile(path);
 	stackRaiseEnabled = false;

@@ -5,82 +5,47 @@ Updated Dec 25, 2016
 
 #include "Game.h"
 #include "GeneralEnum.h"
-#include "Main.h"
+#include "../Main.h"
 
 Game::Game(){
 	//window.create(sf::VideoMode(800, 600), "SFML! Y U NO DRAW BLOCK!!");
 }
 
+Game::Game(sf::RenderWindow &w) {
+	window = &w;
+}
 Game::~Game(){
 	//window.close();
 }
 
 void Game::reset() {
 	b1.reset();// = Board();
-	b2.reset();// = Board();
-	
+	//b2.reset();// = Board();
 }
 
 void Game::init()
 {
-	window.create(sf::VideoMode(800, 600), "TACD");
+	initController();
+	initRenderer();
+}
 
-	std::string blockTexturePath = "assets/images/blocksUpdated.png";
-	//blockTexturePath += "IMG Files/blocksUpdated.png";
-	std::string boardFramePath = "assets/images/1p.png";
-	//boardFramePath += "IMG Files/1p.png";
-	std::string cursorPath = "assets/images/cursor.png";
-	//cursorPath += "IMG Files/cursor.png";
+void Game::initController(){
+	p1Controller.setBoard(&b1);
 
-	blockTexture.setRepeated(true);
-
-	if (!blockTexture.loadFromFile(blockTexturePath))
-	{
-		// error...
-		printf("%s\n", "What have I done : Block Texture Failure");
-		//return -1;
-	}
-	else if (!boardFrameTexture.loadFromFile(boardFramePath))
-	{
-		// error...
-		printf("%s\n", "What Happened : BoardTexture fail , TestDisplay");
-		//return -1;
-	}
-	else if (!cursorTexture.loadFromFile(cursorPath))
-	{
-		printf("%s\n", "What Happened : Cursor Texture fail");
-	}
-	else
-	{
-		printf("All Texture Loaded\n");
-		boardFrameSprite.setTexture(boardFrameTexture);
-
-		for (int i = 0; i < BOARD_HEIGHT; i++)
-		{
-			for (int j = 0; j < BOARD_WIDTH; j++)
-			{
-				boardSprites[i][j].setTexture(blockTexture);
-			}
-		}
-		for (int j = 0; j < BOARD_WIDTH; j++)
-		{
-			bufferRowSprites[j].setTexture(blockTexture);
-		}
-
-	}
 }
 
 void Game::run() {
 
 	//Board board;
-	ControllerCommand input =  ControllerCommand::NoInput;
+	//ControllerCommand input;
 
-	double MS_PER_FRAME = 1000.0 / FPS;//1000 ms per seconds
+	double MS_PER_FRAME = (1000.0 ) / FPS ;//1000 ms per seconds
 	//int MS_PER_FRAME = 16;//miliseconds per frame
 						  //clock_t FPS = 60;
 	sf::Clock current;
 	sf::Time elapsed = current.restart();
-	while (window.isOpen())
+	window->setFramerateLimit(60);
+	while (window->isOpen())
 	{
 		/*Manage Time Beta*/
 		if (frame == 32767) {
@@ -94,7 +59,7 @@ void Game::run() {
 			{
 				second++;
 				milisecond = 0;
-				system("cmd /c cls");
+				//system("cmd /c cls");
 			}
 
 			if (second >= 60)
@@ -109,18 +74,18 @@ void Game::run() {
 		current.restart();
 		
 		///get input here
-		input = ControllerCommand::NoInput;
+		//input = ControllerCommand::NoInput;
 		sf::Event event;
-		while (window.pollEvent(event))
+		while (window->pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
 			{
-				window.close();
-				exit(EXIT_SUCCESS);
+				window->close();
+				//exit(EXIT_SUCCESS);
 			}
 			//handleInput(event, b1);
 			//input = handleInput(event);
-			handleInput(event, input);
+			//handleInput(event, input);
 		}
 		/*
 		if (input != ControllerCommand::NoInput)
@@ -128,26 +93,37 @@ void Game::run() {
 			b1.handleInput(input);
 		}
 		*/
-		window.clear();
+		
 
 		printf("%d:%d  Frame: %d\n", minute, second, frame);
 		printf("NB Frames: %3.2f     \nTemps: %d           \nClocks per Sec: %3.2f\n", (float)elapsed.asMilliseconds() * 60, elapsed, (float)CLOCKS_PER_SEC);
-		b1.run(input);
+		tick();
+		clear();
 		draw();
-		b1.display();
 		display();
 		//lastTime = current;
 		elapsed = current.getElapsedTime();
 
+		//window framerate limit
+		/*
 		if (MS_PER_FRAME - elapsed.asMilliseconds() > 0)
 		{
 			fflush(stdout);
 			Sleep((int)(MS_PER_FRAME - elapsed.asMilliseconds()));
 		}
+		*/
 		//system("cmd /c cls");
 		gotoxy(0, 0);
 	}
 
+}
+
+void Game::tick() {
+	
+	b1.run();
+	p1Controller.handleInput();
+	p1Controller.updateConfig();
+	//b1.display();
 }
 
 void Game::handleInput(sf::Event event, Board &board) {
