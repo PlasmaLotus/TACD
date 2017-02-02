@@ -26,7 +26,9 @@ void Game::reset() {
 void Game::init()
 {
 	initController();
-	initRenderer();
+	renderer.setWindow(window);
+	renderer.setBoards(b1, b2);
+	renderer.initRenderer();
 }
 
 void Game::initController(){
@@ -35,16 +37,13 @@ void Game::initController(){
 }
 
 void Game::run() {
-
-	//Board board;
-	//ControllerCommand input;
-
+	
 	double MS_PER_FRAME = (1000.0 ) / FPS ;//1000 ms per seconds
 	//int MS_PER_FRAME = 16;//miliseconds per frame
 						  //clock_t FPS = 60;
 	sf::Clock current;
 	sf::Time elapsed = current.restart();
-	window->setFramerateLimit(60);
+	window->setFramerateLimit(60);//framerate
 	while (window->isOpen())
 	{
 		/*Manage Time Beta*/
@@ -59,7 +58,6 @@ void Game::run() {
 			{
 				second++;
 				milisecond = 0;
-				//system("cmd /c cls");
 			}
 
 			if (second >= 60)
@@ -73,8 +71,6 @@ void Game::run() {
 		//elapsed = current - lastTime;
 		current.restart();
 		
-		///get input here
-		//input = ControllerCommand::NoInput;
 		sf::Event event;
 		while (window->pollEvent(event))
 		{
@@ -83,28 +79,17 @@ void Game::run() {
 				window->close();
 				//exit(EXIT_SUCCESS);
 			}
-			//handleInput(event, b1);
-			//input = handleInput(event);
-			//handleInput(event, input);
 		}
-		/*
-		if (input != ControllerCommand::NoInput)
-		{
-			b1.handleInput(input);
-		}
-		*/
-		
 
 		printf("%d:%d  Frame: %d\n", minute, second, frame);
 		printf("NB Frames: %3.2f     \nTemps: %d           \nClocks per Sec: %3.2f\n", (float)elapsed.asMilliseconds() * 60, elapsed, (float)CLOCKS_PER_SEC);
+		
 		tick();
-		clear();
-		draw();
-		display();
-		//lastTime = current;
+		render();
+		//render();
+
 		elapsed = current.getElapsedTime();
 
-		//window framerate limit
 		/*
 		if (MS_PER_FRAME - elapsed.asMilliseconds() > 0)
 		{
@@ -118,12 +103,20 @@ void Game::run() {
 
 }
 
+void Game::render() {
+	//renderer.render();
+	
+	renderer.render(b1);
+	//renderer.render(b2);
+}
+
 void Game::tick() {
 	
 	b1.run();
+	b2.run();
 	p1Controller.handleInput();
 	p1Controller.updateConfig();
-	//b1.display();
+	b1.display();
 }
 
 void Game::handleInput(sf::Event event, Board &board) {
