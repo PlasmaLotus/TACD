@@ -1,3 +1,8 @@
+/*
+Created by PlasmaLotus
+Updated May 13, 2017
+*/
+
 #include "ControllerConfig.h"
 
 /*Contains all the commands that do stuff*/
@@ -11,19 +16,19 @@ ControllerConfig::ControllerConfig() :
 	keyMap[sf::Keyboard::Key::Down] = ControllerCommand::Down;
 	keyMap[sf::Keyboard::Key::Left] = ControllerCommand::Left;
 	keyMap[sf::Keyboard::Key::Right] = ControllerCommand::Right;
-	keyMap[sf::Keyboard::Key::Return] = ControllerCommand::Start;
+	keyMap[sf::Keyboard::Key::Return] = ControllerCommand::Pause;
 	keyMap[sf::Keyboard::Key::X] = ControllerCommand::Swap;
-	keyMap[sf::Keyboard::Key::Z] = ControllerCommand::Swap;
+	keyMap[sf::Keyboard::Key::Z] = ControllerCommand::SwapAlt;
 	keyMap[sf::Keyboard::Key::F4] = ControllerCommand::Cheat;
 	keyMap[sf::Keyboard::Key::A] = ControllerCommand::ForceRaise;
 
 	buttonMap[0] = ControllerCommand::Swap;
-	buttonMap[1] = ControllerCommand::Swap;
+	buttonMap[1] = ControllerCommand::SwapAlt;
 	buttonMap[2] = ControllerCommand::Swap;
 	buttonMap[4] = ControllerCommand::ForceRaise;
 	buttonMap[5] = ControllerCommand::ForceRaise;
 	buttonMap[6] = ControllerCommand::Cheat;
-	buttonMap[7] = ControllerCommand::Start;
+	buttonMap[7] = ControllerCommand::Pause;
 
 	//axisMap.insert(std::pair<sf::Joystick::Axis, AxisHandler>(sf::Joystick::Axis::PovY, { ControllerCommand::Up, ControllerCommand::Down}));
 	axisMap[sf::Joystick::Axis::PovY] = { ControllerCommand::Up, ControllerCommand::Up, ControllerCommand::Down , ControllerCommand::Down };
@@ -47,7 +52,6 @@ bool ControllerConfig::loadConfig(std::string iniPath){
 }
 
 /*Havent tested Set Key yet*/
-
 void ControllerConfig::setKey(ControllerCommand key, sf::Keyboard::Key value){
 	keyMap.at(value) = key;
 }
@@ -65,7 +69,7 @@ ControllerCommand ControllerConfig::getCommand(sf::Keyboard::Key key)
 		command = (keyMap.at(key));    //get the command associated to the key
 	}
 	catch (const std::out_of_range& oor) {
-		return ControllerCommand::NoInput;
+		command = ControllerCommand::NoInput;
 	}
 	return command;
 }
@@ -100,7 +104,7 @@ ControllerCommand ControllerConfig::getCommand(sf::Joystick::Axis axis, float va
 			}
 		}
 		catch (const std::out_of_range& oor) {
-			return ControllerCommand::NoInput;
+			command =  ControllerCommand::NoInput;
 		}
 	}
 	return command;
@@ -113,13 +117,12 @@ ControllerCommand ControllerConfig::getCommand(int button)
 	if (button < sf::Joystick::getButtonCount(joystickNumber))
 	{
 		try {
-			command = (buttonMap.at(button));      //get the command associated to the button
+			command = (buttonMap.at(button));//get the command associated to the button
 		}
 		catch (const std::out_of_range& oor) {
-			return ControllerCommand::NoInput;
+			command = ControllerCommand::NoInput;
 		}
 	}
-
 	return command;
 }
 
@@ -130,4 +133,44 @@ int ControllerConfig::getJoystickNumber(void)
 
 void ControllerConfig::setJoystickNumber(int number) {
 	joystickNumber = number;
+}
+
+void ControllerConfig::getKeys() {
+	std::vector<sf::Keyboard::Key> vec;
+	for (std::map<sf::Keyboard::Key, ControllerCommand>::iterator it = keyMap.begin(); it != keyMap.end(); ++it) {
+		vec.push_back(it->first);
+		//cout << it->first << "\n";
+	}
+}
+
+std::vector<sf::Keyboard::Key> ControllerConfig::getKeyboardKeys(ControllerCommand c) {
+	std::vector<sf::Keyboard::Key> vec;
+	for (std::map<sf::Keyboard::Key, ControllerCommand>::iterator it = keyMap.begin(); it != keyMap.end(); ++it) {
+		if (it->second == c) {
+			vec.push_back(it->first);
+		}
+	}
+	return vec;
+}
+
+std::vector<int> ControllerConfig::getButtonKeys(ControllerCommand c) {
+	std::vector<int> vec;
+	for (std::map<int, ControllerCommand>::iterator it = buttonMap.begin(); it != buttonMap.end(); ++it) {
+		if (it->second == c) {
+			vec.push_back(it->first);
+		}
+	}
+	return vec;
+}
+
+std::vector<sf::Joystick::Axis> ControllerConfig::getAxisKeys(ControllerCommand c) {
+	std::vector<sf::Joystick::Axis> vec;
+	for (std::map<sf::Joystick::Axis, AxisHandler>::iterator it = axisMap.begin(); it != axisMap.end(); ++it) {
+		/*
+		if (it->second == c) {
+			vec.push_back(it->first);
+		}
+		*/
+	}
+	return vec;
 }

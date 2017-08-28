@@ -1,17 +1,12 @@
 /*
 Created by PlasmaLotus
-Updated Nov 25, 2016
-
-This class creates a random board;
+Updated May 13, 2017
 */
 
+
+//This class creates a random board
 #include <time.h>
 #include <random>
-//#include <list>
-
-//#include "Board.h"
-//#include "Block.h"
-#include "GeneralEnum.h"
 #include "BoardRandomBoardHandler.h"
 
 RandomBoardGenerator::RandomBoardGenerator():

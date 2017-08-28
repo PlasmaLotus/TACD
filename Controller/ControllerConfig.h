@@ -1,19 +1,25 @@
+/*
+Created by PlasmaLotus
+Updated May 13, 2017
+*/
+
 #ifndef _ControllerConfig_H_
 #define _ControllerConfig_H_
 
 #include <string.h>
 #include <map>
+#include <vector>
 #include <SFML/Window.hpp>
 
 enum ControlMode { Keyboard, Joystick };
-#include "../Board/GeneralEnum.h"
+//#include "Controller.h"
+enum ControllerCommand { NoInput2, Up, Down, Left, Right, Swap, SwapAlt, ForceRaise, Pause, Cheat, NoInput, CommandMax = NoInput};
 
 class ControllerConfig{
 public:
     ControllerConfig();
     ~ControllerConfig();
     bool loadConfig(std::string iniPath);
-    
 
     void setKey(ControllerCommand key, sf::Keyboard::Key value);
     void setKey(ControllerCommand key, float value);
@@ -23,6 +29,10 @@ public:
     ControllerCommand getCommand(int button);
 	int getJoystickNumber(void);
 	void setJoystickNumber(int number);
+	void getKeys();
+	std::vector<sf::Keyboard::Key> getKeyboardKeys(ControllerCommand c);
+	std::vector<int> getButtonKeys(ControllerCommand c);
+	std::vector<sf::Joystick::Axis> getAxisKeys(ControllerCommand c);
 private:
 
 	struct AxisHandler {
@@ -43,4 +53,5 @@ private:
     float joystickMaxZone;//Difference between slighlty held and Max held, if necessary
 
 };
+
 #endif

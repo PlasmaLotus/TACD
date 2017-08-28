@@ -1,15 +1,10 @@
 /*
 Created by PlasmaLotus
-Updated Dec 25, 2016
+Updated May 13, 2017
 */
 
 #include "Main.h"
-#include "Board/Game.h"
-#include "Board/Block.h"
-#include "Board/Board.h"
-#include "Board/Tile.h"
-#include "Board/GeneralEnum.h"
-#include "Board/GameRenderer.h"
+#include "States\StateManager.h"
 
 void gotoxy(int x, int y)
 {
@@ -22,11 +17,7 @@ void gotoxy(int x, int y)
 
 int main(int argc, char *argv[]) {
 	
-	sf::RenderWindow window(sf::VideoMode(800, 600), "TACD");
-	Game game(window);
-	game.init();
-	game.run();
-
-	//Game().run();
+	StateManager& sm = StateManager::getInstance();
+	sm.run();
 	return 0;
 }

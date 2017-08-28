@@ -1,19 +1,9 @@
 /*
 Created by PlasmaLotus
-Updated Dec 25, 2016
+Updated May 13, 2017
 */
 
-#include <time.h>
-#include <random>
-#include <ctype.h>//for displayboard
-#include <windows.h>
-#include <iostream>
-
-#include "Tile.h"
 #include "Board.h"
-#include "Block.h"
-#include "GeneralEnum.h"
-#include "BoardRandomBoardHandler.h"
 
 Board::Board() :
 boardSize(BOARD_WIDTH),
@@ -33,6 +23,7 @@ pauseTime(0),
 _match(false),
 _falling(false),
 cursor({ 4,2 }),
+countdownFrameCount(CountdownFrames),
 boardState(BoardState::Running){
 	std::srand(time(NULL));
 	initBoardRandom();
@@ -49,6 +40,8 @@ void Board::reset()
 	bufferRowOffset = 0;
 	resetRNG();
 	initBoardRandom();
+	//state = BoardState::Countdown;
+	//countdownFrameCount = CountdownFrames;
 }
 
 void Board::resetRNG() {
@@ -114,7 +107,7 @@ void Board::displayBoard()
 		{
 			if (tiles[i][j].block.matching)
 			{
-				switch (tiles[i][j].block.getColor())
+				switch (tiles[i][j].block.color)
 				{
 				case red: textBoard[i][j] = 'R'; break;
 				case green: textBoard[i][j] = 'G'; break;
@@ -128,7 +121,7 @@ void Board::displayBoard()
 			}
 			else
 			{
-				switch (tiles[i][j].block.getColor())
+				switch (tiles[i][j].block.color)
 				{
 				case red: textBoard[i][j] = 'r'; break;
 				case green: textBoard[i][j] = 'g'; break;
@@ -142,13 +135,16 @@ void Board::displayBoard()
 			}
 		}
 	}
-
+	//int cursorLocation2 = -1;
+	//prints it backwards 
+	printf("Board:\n Size: %d\n ", sizeof(Board));
+	//printf(" ");
 	//for (int i = 0; i < boardHeight; i++)
 	for (int i = BOARD_HEIGHT - 1; i >= 0;i--)
 	{
 		for (int j = 0; j < boardWidth; j++)
 		{
-			
+			//printf(" ");
 			if (i == cursor.row && (j == cursor.column || j == cursor.column + 1)) {
 				SetConsoleTextAttribute(GetStdHandle(STD_INPUT_HANDLE), 0x5B);
 			}
@@ -184,7 +180,7 @@ void Board::displaybufferRow()
 	{
 		if (bufferRow[j].block.matching)
 		{
-			switch (bufferRow[j].block.getColor())
+			switch (bufferRow[j].block.color)
 			{
 			case red: textbufferRow[j] = 'R'; break;
 			case green: textbufferRow[j] = 'G'; break;
@@ -198,7 +194,7 @@ void Board::displaybufferRow()
 		}
 		else
 		{
-			switch (bufferRow[j].block.getColor())
+			switch (bufferRow[j].block.color)
 			{
 			case red: textbufferRow[j] = 'r'; break;
 			case green: textbufferRow[j] = 'g'; break;
@@ -337,7 +333,7 @@ void Board::initBoardRandom(){
 				if (tiles[i][j].isBlock() && tiles[i][j].block.matching)
 				{
 					tiles[i][j].block.color = Board::randomColor(5);
-					tiles[i][j].block.setMatching(false);
+					tiles[i][j].block.matching = false;//setMatching(false);
 				}
 
 			}
@@ -348,7 +344,7 @@ void Board::initBoardRandom(){
 			if (bufferRow[j].isBlock() && bufferRow[j].block.matching)
 			{
 				bufferRow[j].block.color = Board::randomColor(5);
-				bufferRow[j].block.setMatching(false);
+				bufferRow[j].block.matching = false;//setMatching(false);
 			}
 		}
 
@@ -371,7 +367,7 @@ void Board::bufferRowNewbufferRow(){
 		{
 			if (bufferRow[j].block.matching) {
 				bufferRow[j].block.color = randomColor(5);
-				bufferRow[j].block.setMatching(false);
+				bufferRow[j].block.matching = false;//setMatching(false);
 			}
 		}
 	}
@@ -442,6 +438,30 @@ bool Board::swapBlocks() {
 			
 		}
 		
+
+		/*
+		if (tiles[cursor.row][cursor.column].block.state == BlockState::falling)
+		{
+			if (tiles[cursor.row][cursor.column + 1].type == BlockType::block && !swappable(cursor.row, cursor.column + 1)){
+				/*Cannot be swapped in air unless
+				return false;
+			}
+		}
+		else if (tiles[cursor.row][cursor.column + 1].block.state == BlockState::falling)
+		{
+			if (tiles[cursor.row][cursor.column].type == BlockType::block && !swappable(cursor.row, cursor.column)) {
+				//Cannot be swapped in air unless
+				return false;
+			}
+		}
+		*/
+
+		/*
+			if ((tiles[cursor.row][cursor.column + 1].type == BlockType::block && !swappable(cursor.row, cursor.column + 1)) || (tiles[cursor.row][cursor.column - 1].type == BlockType::block && !swappable(cursor.row, cursor.column - 1))) {
+				//Cannot be swapped in air unless 
+				return false;
+			}
+		*/
 		//actual block swapping
 		_swapBlocks(cursor.row, cursor.column, cursor.row, cursor.column + 1);
 		
@@ -463,29 +483,7 @@ bool Board::swapBlocks() {
 	return true;
 }
 
-bool Board::moveCursor(ControllerCommand d) {
-	switch (d)
-	{
-		case Up:
-		{
-			return moveCursorUp();
-		}
-		case Down:
-		{
-			return moveCursorDown();
-		}
-		case Left:
-		{
-			return moveCursorLeft();
-		}
-		case Right:
-		{
-			return moveCursorRight();
-		}
-		default: return false;
-	}
-}
-bool Board::moveCursorUp() {
+bool Board::moveCursorUp(){
 	if (cursor.row < TOP_ROW)
 	{
 		cursor.row++;
@@ -524,82 +522,6 @@ bool Board::moveCursorRight() {
 	else {
 		return false;
 	}
-}
-
-void Board::addInput(ControllerCommand d) {
-	inputs.push(d);
-}
-bool Board::handleInput() {
-	
-	while (!inputs.empty())
-	{
-		ControllerCommand input = inputs.top();
-		inputs.pop();
-		switch(input)
-		{
-			case ControllerCommand::Up :
-			case ControllerCommand::Down :
-			case ControllerCommand::Left :
-			case ControllerCommand::Right :
-			{
-				return moveCursor(input);
-			}
-			case ControllerCommand::Swap :
-				{
-					//swap blocks
-					swapBlocks();
-					break;
-				}
-			case ControllerCommand::ForceRaise :
-				{
-					forceRaise();//force Raise
-					break;
-				}
-			case ControllerCommand::Pause:
-			{
-				betaValue++;
-			}
-			case ControllerCommand::NoInput :
-			default: return false;
-		}
-	}
-	return false;
-	
-}
-bool Board::handleInput(ControllerCommand input) {
-
-	switch (input)
-	{
-		case ControllerCommand::Up:
-		case ControllerCommand::Down:
-		case ControllerCommand::Left:
-		case ControllerCommand::Right:
-		{
-			return moveCursor(input);
-			break;
-		}
-		case ControllerCommand::Swap:
-		{
-			//swap blocks
-			swapBlocks();
-			break;
-		}
-		case ControllerCommand::ForceRaise:
-		{
-			forceRaise();//force Raise
-			break;
-		}
-		case ControllerCommand::Pause:
-		{
-			betaValue++;
-			//call pause
-			break;
-		}
-		case ControllerCommand::NoInput:
-		default: return false;
-	}
-	return true;
-
 }
 
 void Board::forceRaise() {
@@ -669,7 +591,7 @@ bool Board::checkMatch(void) {
 			if( _checkMatch(i, j, i, j + 1) 
 					&& _checkMatch(i, j, i, j + 2) )
 			{
-				tiles[i][j].block.setMatching(true);
+				tiles[i][j].block.matching = false;//setMatching(true);
 				if (j + 1 < boardSize)
 						tiles[i][j + 1].setBlockMatching(true);
 				if (j + 2 < boardSize)
@@ -722,17 +644,13 @@ bool Board::_checkMatchbufferRow(int column, int column2)
 			}
 		}
 	}
-
 	return false;
 }
 bool Board::checkMatchbufferRow(void) {
-
 	bool match = false;
-
 	for (int j = 0; j < boardWidth; j++)
 	{
 		//2 steps
-
 		if (_checkMatchbufferRow(j, j + 1)
 			&& _checkMatchbufferRow(j, j + 2))
 		{
@@ -754,9 +672,7 @@ bool Board::checkMatchbufferRow(void) {
 				bufferRow[j - 2].setBlockMatching(true);
 			match = true;
 		}
-
 	}
-
 	return match;
 }
 
@@ -768,7 +684,6 @@ bool Board::checkAllMatches(void) {
 }
 
 bool Board::isMatch(void) {
-
 	std::stack<Position> tileList;
 	for (int i = 0; i < boardHeight; i++)
 	{
@@ -803,7 +718,6 @@ void Board::handleBufferRow() {
 	{
 	}
 	*/
-
 	//if (!_match && !_swap)//!_activeBlocks
 	if (boardState = BoardState::Running)
 	{
@@ -811,13 +725,11 @@ void Board::handleBufferRow() {
 		{
 			if (!_stop)
 			{
-					/*Add pause timer here
+					/*Add pause timer here 
 						forceRaise should override stoptime*/
 				if (!blocksOnTopRow())
 				{
-
 					bufferRowTics++;
-
 					if (forcedRaise)
 					{
 						bufferRowTics = 0;
@@ -828,7 +740,6 @@ void Board::handleBufferRow() {
 						bufferRowOffset++;
 						bufferRowTics = 0;
 					}
-
 					/*swap rows*/
 					if (bufferRowOffset >= bufferRowOffsetTotal)
 					{
@@ -901,11 +812,9 @@ void Board::handleFallingBlocks() {
 						tiles[i][j].block.state = BlockState::falling;
 						tiles[i][j].floatingCounter = Tile::DEFAULT_COUNTER_VALUE;
 						//tiles[i][j].fallingCounter = 0;
-
 					}
 					else
 						tiles[i][j].floatingCounter++;
-
 				}
 				else if (tiles[i][j].block.state == BlockState::falling)//dont fall if there is a block under
 				{
@@ -917,8 +826,6 @@ void Board::handleFallingBlocks() {
 					if (i >= 1)
 					{
 						//if (tiles[i][j].fallingCounter > fallingTime)
-						//{
-
 							if ((tiles[i - 1][j].type == BlockType::air && tiles[i - 1][j].block.state != BlockState::swapping))
 							{
 								/*if under is air and isnt swapping*/
@@ -955,7 +862,6 @@ void Board::handleFallingBlocks() {
 						//{
 							//tiles[i][j].fallingCounter++;
 						//}
-
 					}
 					else if (i <= 0)
 					{
@@ -1018,7 +924,6 @@ void Board::handleSwappingBlocks() {
 		
 			if (tiles[i][j].block.state == BlockState::swapping) 
 			{
-
 				if (tiles[i][j].swappingCounter > SwappingTime)
 				{
 						tiles[i][j].swappingCounter = Tile::DEFAULT_COUNTER_VALUE;						
@@ -1038,7 +943,6 @@ void Board::handleSwappingBlocks() {
 /*Check the whole board to see if any are matching*/
 void Board::handleMatchingBlocks(){
 	int popTime = BlockPopTime;
-
 	/*Also handles incrementing chain number*/
 	bool chaining = false;
 	bool clearing = false;
@@ -1078,7 +982,6 @@ void Board::handleMatchingBlocks(){
 					tiles[i][j].popCounter = 0;
 					tiles[i][j].popCounterFinal = 0;
 					tiles[i][j].block.matching = false;
-
 				}
 				else
 					tiles[i][j].matchingCounter++;
@@ -1097,7 +1000,6 @@ void Board::handleMatchingBlocks(){
 					{
 						tiles[i][j].block.state = BlockState::cleared;
 						//tiles[i][j].block.stateExtra = BlockExtraState::extraNormal;
-
 						//setChainAbove(i, j, tiles[i][j].chainNumber);
 					}
 				}
@@ -1326,32 +1228,37 @@ void Board::tick() {
 	_eventHandler->endTick();
 }
 */
-void Board::run(ControllerCommand input)
-{
-	handleInput(input);
-	run();
-}
-void Board::run() {
-	initTics();
-	
-	//handleInput();
-	//handleInput(input);
-	/*
-	while (!inputs.empty())
+
+void Board::tick() {
+	switch (boardState)
 	{
-		inputs.pop();
+
+	case BoardState::Countdown: {
+		
+		if (--countdownFrameCount <= 0){
+			boardState = BoardState::Running;
+		}
+		
 	}
-	*/
-	handleSwappingBlocks();
-	handleFallingBlocks();//blocks fall
-	handleMatchingBlocks();//switch block to matching state
+	case BoardState::Running: {
+		initTics();
+		handleSwappingBlocks();
+		handleFallingBlocks();//blocks fall
+		handleMatchingBlocks();//switch block to matching state
 
-	checkMatch();//find all block that match
-	//BetacheckMatch();
+		checkMatch();//find all block that match
+					 //BetacheckMatch();
 
-	/*Blocks Falling needs to be done after matches, so that they interact on the next frame*/
-	/*Blocks are idle for 1 frame before they can match*/
-	handleBufferRow();
+					 /*Blocks Falling needs to be done after matches, so that they interact on the next frame*/
+					 /*Blocks are idle for 1 frame before they can match*/
+		handleBufferRow();
+		break;
+	}
+	default:
+		break;
+	}
+	
+
 }
 
 

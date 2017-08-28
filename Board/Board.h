@@ -1,23 +1,31 @@
 /*
 Created by PlasmaLotus
-Updated Dec 25, 2016
+Updated May 17, 2017
 */
 
+#include <time.h>
+#include <random>
+#include <ctype.h>//for displayboard
+#include <windows.h>
+#include <iostream>
 #include <stack>
 #include <list>
 #include "Block.h"
 #include "Tile.h"
-#include "GeneralEnum.h"
 #include "BoardRandomBoardHandler.h"
 #include "GarbageBlock.h"
-
 
 #ifndef _Board_
 #define _Board_
 
+//enum BoardState { score, vs, singlePlayer, multiPlayer };
+//enum BoardDimension { _2D, _3D };
+enum BoardState{Countdown, Running, Win, Loss};
+
 class Board {
 
 public:
+	int FPS = 60;
 	static const int BOARD_HEIGHT = 12;
 	static const int BOARD_WIDTH = 6;
 	static const int TOP_ROW = BOARD_HEIGHT - 1;
@@ -26,9 +34,9 @@ public:
 	Tile tiles[BOARD_HEIGHT][BOARD_WIDTH];
 	Tile bufferRow[BOARD_WIDTH];
 	//int bufferRowTics;
-	
+	static const int CountdownFrames = 240;
+	int countdownFrameCount;
 	//struct cursor
-	enum BoardState{Countdown, Running, Win, Lose};
 	BoardState boardState;
 	struct Position {
 		int row, column;
@@ -75,17 +83,11 @@ public:
 
 	bool swapBlocks();
 
-	bool moveCursor(ControllerCommand d);
-
 	bool moveCursorUp();
 	bool moveCursorDown();
 	bool moveCursorLeft();
 	bool moveCursorRight();
 
-	void addInput(ControllerCommand d);
-
-	bool handleInput();
-	bool handleInput(ControllerCommand input);
 
 	void forceRaise();
 
@@ -112,33 +114,24 @@ public:
 	void setChainAbove(int row, int col);
 
 	void initTics();
-
-	void run();
-	void run(ControllerCommand input);
+	void tick();
 	void reset();
-
 	void resetRNG();
-
 	void clearAll();
 
 	std::list <GarbageBlock> garbageQueue;
-
 
 	bool stackRaiseEnabled = true;
 private:
 
 	RandomBoardGenerator randomBoardHandler;
-
-	std::stack <ControllerCommand> inputs;
-
-
 	
 	//static const char FPS = 60;
 	//int boardLevel = 5;
 	static const int bufferRowOffsetTotal = 16;//Amount of total steps for each bufferRow raise
 	int bufferRowTics;//current step of the bufferRow
 	//char bufferRowOffset;
-	int bufferRowTotalTics = FPS * 5;//Amount of tics total to raise a bufferRow from 0 to 100%
+	int bufferRowTotalTics = 60*5; //300//Amount of tics total to raise a bufferRow from 0 to 100%
 		//6 secs on SHard stage 1
 		//2.45 /sec on SHard
 		//4.75 secs on vs level 5

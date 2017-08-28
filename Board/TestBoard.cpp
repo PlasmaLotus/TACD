@@ -32,43 +32,43 @@ void TestBoard::initBoardFile(char* path)
 					case '1':
 					{
 						tiles[i][j].type = BlockType::block;
-						tiles[i][j].block.setColor(BlockColor::red);
+						tiles[i][j].block.color = (BlockColor::red);
 						break;
 					}
 					case '2':
 					{
 						tiles[i][j].type = BlockType::block;
-						tiles[i][j].block.setColor(BlockColor::blue);
+						tiles[i][j].block.color = (BlockColor::blue);
 						break;
 					}
 					case '3':
 					{
 						tiles[i][j].type = BlockType::block;
-						tiles[i][j].block.setColor(BlockColor::green);
+						tiles[i][j].block.color = (BlockColor::green);
 						break;
 					}
 					case '4':
 					{
 						tiles[i][j].type = BlockType::block;
-						tiles[i][j].block.setColor(BlockColor::purple);
+						tiles[i][j].block.color = (BlockColor::purple);
 						break;
 					}
 					case '5':
 					{
 						tiles[i][j].type = BlockType::block;
-						tiles[i][j].block.setColor(BlockColor::yellow);
+						tiles[i][j].block.color = (BlockColor::yellow);
 						break;
 					}
 					case '6':
 					{
 						tiles[i][j].type = BlockType::block;
-						tiles[i][j].block.setColor(BlockColor::pink);
+						tiles[i][j].block.color = (BlockColor::pink);
 						break;
 					}
 					case '7':
 					{
 						tiles[i][j].type = BlockType::block;
-						tiles[i][j].block.setColor(BlockColor::orange);
+						tiles[i][j].block.color = (BlockColor::orange);
 						break;
 					}
 					case '0':
@@ -80,9 +80,7 @@ void TestBoard::initBoardFile(char* path)
 						break;
 
 					}
-
 					fgetc(file);
-
 				}
 			}
 

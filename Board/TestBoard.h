@@ -24,12 +24,6 @@ public:
 	//string pathString;
 
 
-
-private:
-
-	static const int BlockHeight = 32;
-	static const int BlockLength = 32;
-
 };
 
 #endif

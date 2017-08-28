@@ -1,0 +1,10 @@
+#Player 1 Controls
+Keyboard Mode:
+Up :
+Down : 
+Left :
+Right :
+Swap :
+SwapAlt :
+ForceRaise :
+Joystick Mode: 

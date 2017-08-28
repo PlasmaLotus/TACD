@@ -1,12 +1,10 @@
 /*
 Created by PlasmaLotus
-Updated Nov 25, 2016
+Updated May 13, 2017
 */
 
 #include "Block.h"
 #include "Tile.h"
-#include "GeneralEnum.h"
-
 
 #ifndef _RandomBoardGenerator_
 #define _RandomBoardGenerator_

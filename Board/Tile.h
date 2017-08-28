@@ -1,16 +1,15 @@
 /*
 Created by PlasmaLotus
-Updated Dec 25, 2016
+Updated May 13, 2017
 */
 
 #include "Block.h"
 #include "GarbageBlock.h"
-#include "GeneralEnum.h"
 
 #ifndef _Tile_
 #define _Tile_
 
-//enum TileType {air, block, garbage};
+enum BlockType { block, air, garbage };
 
 struct Tile {
 
@@ -30,7 +29,6 @@ struct Tile {
 	int popCounterFinal;
 	//int chainNumber;
 	bool chain;
-
 
 	Tile();
 	~Tile();
