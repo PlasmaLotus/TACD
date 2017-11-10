@@ -1,4 +1,4 @@
-/*
+﻿/*
 Created by PlasmaLotus
 Updated May 13, 2017
 */
@@ -30,36 +30,49 @@ void GameRenderer::render()
 	//return window->getDefaultView().;
 }
 
-void GameRenderer::initRenderer() {
+bool GameRenderer::initRenderer() {
 	//window->create(sf::VideoMode(800, 600), "TACD");
 	//window.setTitle("TACD VS GAME");
-
-	std::string blockTexturePath = "assets/images/blocksUpdated.png";
+	bool success = false;
+	std::string blockTexturePath = ".\\assets\\images\\BlocksUpdated.png";
+	//std::string blockTexturePath = "Y:/TACD/assets/images/BlocksUpdated.png";
 	//blockTexturePath += "IMG Files/blocksUpdated.png";
-	std::string boardFramePath = "assets/images/1p.png";
+	//std::string boardFramePath = "Y:/TACD/assets/images/1p.png";
+	std::string boardFramePath = ".\\assets\\images\\1p.png";
 	//boardFramePath += "IMG Files/1p.png";
-	std::string cursorPath = "assets/images/cursor.png";
+	//std::string cursorPath = "Y:/TACD/assets/images/cursor.png";
+	std::string cursorPath = ".\\assets\\images\\cursor.png";
 	//cursorPath += "IMG Files/cursor.png";
-
-	blockTexture.setRepeated(true);
 
 	if (!blockTexture.loadFromFile(blockTexturePath))
 	{
 		// error...
+		
+		//success = blockTexture.loadFromFile("C:/Users/1251372/Test/BlocksUpdated.png");
 		printf("%s\n", "What have I done : Block Texture Failure");
+		printf("%s\n", blockTexturePath.c_str());
+		//success = false;
 		//return -1;
 	}
-	else if (!boardFrameTexture.loadFromFile(boardFramePath))
+	if (!boardFrameTexture.loadFromFile(boardFramePath))
 	{
 		// error...
+		//success = boardFrameTexture.loadFromFile("C:/Users/1251372/Test/p1.png");
 		printf("%s\n", "What Happened : BoardTexture fail , TestDisplay");
+		printf("%s\n", boardFramePath.c_str());
+		//success = false;
+
 		//return -1;
 	}
-	else if (!cursorTexture.loadFromFile(cursorPath))
+	if (!cursorTexture.loadFromFile(cursorPath))
 	{
-		printf("%s\n", "What Happened : Cursor Texture fail");
+		//success = cursorTexture.loadFromFile("C:/Users/1251372/Test/cursor.png");
+		printf("%s\n", "What went wrong : Cursor Texture fail");
+		printf("%s\n", cursorPath.c_str());
+		//success = false;
+
 	}
-	else
+	//if(success)
 	{
 		printf("All Texture Loaded\n");
 		boardFrameSprite.setTexture(boardFrameTexture);
@@ -76,7 +89,11 @@ void GameRenderer::initRenderer() {
 			bufferRowSprites[j].setTexture(blockTexture);
 		}
 
+		blockTexture.setRepeated(true);
 	}
+	
+	texturesLoaded = success;
+	return success;
 }
 
 int GameRenderer::spriteColorInt(BlockColor color) {
@@ -88,7 +105,7 @@ int GameRenderer::spriteColorInt(BlockColor color) {
 	case blue: return 3;
 	case purple: return 4;
 	case pink: return 5;
-		//case exclam: return 6;
+	//case exclam: return 6;
 	case none: return 7;
 	default:
 		return 7;

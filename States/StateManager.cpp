@@ -57,6 +57,7 @@ void StateManager::run()
 			{
 				second++;
 				milisecond = 0;
+				system("cls");
 			}
 
 			if (second >= 60)

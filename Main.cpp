@@ -15,9 +15,19 @@ void gotoxy(int x, int y)
 	SetConsoleCursorPosition(h, c);
 }
 
+//template <typename T>
+std::string NumberToString(int Number)
+{
+	std::ostringstream ss;
+	ss << Number;
+	return ss.str();
+}
+
 int main(int argc, char *argv[]) {
 	
 	StateManager& sm = StateManager::getInstance();
 	sm.run();
 	return 0;
 }
+
+

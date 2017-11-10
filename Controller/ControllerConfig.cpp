@@ -7,7 +7,7 @@ Updated May 13, 2017
 
 /*Contains all the commands that do stuff*/
 ControllerConfig::ControllerConfig() :
-	joystickNumber(100),
+	joystickNumber(0),
 	joystickDeadZone(15.f),
 	joystickMaxZone(60.f)
 {

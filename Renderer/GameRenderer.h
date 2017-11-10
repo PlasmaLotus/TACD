@@ -38,7 +38,7 @@ public:
 	~GameRenderer();
 	//void setBoards(Board b1, Board b2);
 	
-	void initRenderer();
+	bool initRenderer();
 
 	int spriteColorInt(BlockColor color);
 	static const int TILE_SIZE = 32;
@@ -69,7 +69,7 @@ public:
 	int cursorTime = -1;
 	const int spriteScale = 2;
 	sf::Texture lastFrame;//not implemented
-
+	bool texturesLoaded = false;
 
 	int p1XOffset;
 	int p1Yoffset;

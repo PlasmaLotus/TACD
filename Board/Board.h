@@ -125,7 +125,7 @@ public:
 private:
 
 	RandomBoardGenerator randomBoardHandler;
-	
+	void displayBlockWithColor();
 	//static const char FPS = 60;
 	//int boardLevel = 5;
 	static const int bufferRowOffsetTotal = 16;//Amount of total steps for each bufferRow raise

@@ -40,7 +40,9 @@ void Controller::handleInput(){
 	if (config != NULL) {
 		
 		handleInputKeyboard();
-		handleInputJoystick();
+		if (sf::Joystick::isConnected(0)){
+			handleInputJoystick();
+		}
 	}
 	for (int i = 0; i < ControllerCommand::CommandMax; i++) {
 	

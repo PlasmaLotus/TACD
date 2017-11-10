@@ -4,6 +4,7 @@ Updated May 13, 2017
 */
 
 #include "Board.h"
+#include "../Main.h"
 
 Board::Board() :
 boardSize(BOARD_WIDTH),
@@ -140,6 +141,8 @@ void Board::displayBoard()
 	printf("Board:\n Size: %d\n ", sizeof(Board));
 	//printf(" ");
 	//for (int i = 0; i < boardHeight; i++)
+	gotoxy(0, 10);
+	std::cout << "\033[1;31mbold red text\033[0m\n";
 	for (int i = BOARD_HEIGHT - 1; i >= 0;i--)
 	{
 		for (int j = 0; j < boardWidth; j++)
@@ -151,14 +154,26 @@ void Board::displayBoard()
 			else {
 				SetConsoleTextAttribute(GetStdHandle(STD_INPUT_HANDLE), 0x1A);
 			}
-			std::cout << textBoard[i][j];
+			
+			std::string blockOutput = "";
+			blockOutput += textBoard[i][j];
+			blockOutput+= "_ma" + NumberToString(tiles[i][j].matchingCounter);
+			blockOutput += "_cl" + NumberToString(tiles[i][j].popCounter) ;
+			blockOutput += "_clF" + NumberToString(tiles[i][j].popCounterFinal);
+			//blockOutput += "_ch" + NumberToString(tiles[i][j].chain) + "_";
+			//std::cout << textBoard[i][j];
+			std::cout << blockOutput;
+
+			//PrintCursor
 			if (j < BOARD_WIDTH - 1)
 			{
 				if (i == cursor.row && j == cursor.column ) {
-					printf("||");
+					//printf("||");
+					std::cout << "!!";
 				}
 				else
-				printf(", ");
+					std::cout << ", ";
+					//printf(", ");
 			}
 		}
 		printf("\n ");
@@ -171,6 +186,7 @@ void Board::displayBoard()
 	{
 		printf("Combo: %d\n", comboCounter);
 	}
+	gotoxy(0, 0);
 }
 
 /*Displays the state of the bufferRow in the Command Line*/
@@ -221,6 +237,10 @@ void Board::displaybufferRow()
 		//3.2f
 }
 
+void Board::displayBlockWithColor(){
+	
+	std::cout << "\033[1;31mbold red text\033[0m\n";
+}
 /*Returns a Random Block Color*/
 BlockColor Board::randomColor(void) {
 	int defaultNbColor = 5;
@@ -713,12 +733,6 @@ void Board::handleBufferRow() {
 
 	/*Handle Buffer Row / Handle BufferRow / Handle Raising Blocks*/
 	/*TODO: implement forceRaise*/
-	/*
-	if ( !isMatch() )
-	{
-	}
-	*/
-	//if (!_match && !_swap)//!_activeBlocks
 	if (boardState = BoardState::Running)
 	{
 		if (stackRaiseEnabled)
@@ -793,11 +807,12 @@ void Board::handleFallingBlocks() {
 
 					if (i >= 1)//no need to check the bottom row
 					{
-						if ((tiles[i - 1][j].type == BlockType::air && tiles[i-1][j].block.state != BlockState::swapping) || tiles[i - 1][j].block.state == BlockState::floating || tiles[i - 1][j].block.state == BlockState::falling)//|| (tiles[i-1][j].block.state == BlockState::cleared && tiles[i][j].block.stateExtra != BlockExtraState::fromClear)) 
+						if ((tiles[i - 1][j].type == BlockType::air && tiles[i-1][j].block.state != BlockState::swapping) || tiles[i - 1][j].block.state == BlockState::floating || tiles[i - 1][j].block.state == BlockState::falling)
+							//|| (tiles[i-1][j].block.state == BlockState::cleared && tiles[i][j].block.stateExtra != BlockExtraState::fromClear)) 
 						{
 							tiles[i][j].block.state = BlockState::floating;
 							//tiles[i][j].floatingCounter = tiles[i - 1][j].floatingCounter;
-							tiles[i][j].floatingCounter = 0;
+							tiles[i][j].floatingCounter = FloatingTime;
 
 						}
 						//else if ()
@@ -807,14 +822,14 @@ void Board::handleFallingBlocks() {
 				{
 					//tiles[i][j].airLock = false;
 					//block hovers for a while
-					if (tiles[i][j].floatingCounter > FloatingTime)
+					if (tiles[i][j].floatingCounter <= 0)
 					{
 						tiles[i][j].block.state = BlockState::falling;
-						tiles[i][j].floatingCounter = Tile::DEFAULT_COUNTER_VALUE;
-						//tiles[i][j].fallingCounter = 0;
+						tiles[i][j].fallingCounter = fallingTime;/////FIND FALLING COUNTER
+						tiles[i][j].floatingCounter = 0;
 					}
 					else
-						tiles[i][j].floatingCounter++;
+						tiles[i][j].floatingCounter--;
 				}
 				else if (tiles[i][j].block.state == BlockState::falling)//dont fall if there is a block under
 				{
@@ -825,7 +840,7 @@ void Board::handleFallingBlocks() {
 					Allows for trick chains*/
 					if (i >= 1)
 					{
-						//if (tiles[i][j].fallingCounter > fallingTime)
+						if (tiles[i][j].fallingCounter <= 0) {
 							if ((tiles[i - 1][j].type == BlockType::air && tiles[i - 1][j].block.state != BlockState::swapping))
 							{
 								/*if under is air and isnt swapping*/
@@ -833,7 +848,6 @@ void Board::handleFallingBlocks() {
 								/*TODO: implement the state from Clear*/
 								//move block place
 								tiles[i - 1][j] = tiles[i][j];
-								//tiles[i][j] = Tile();
 								tiles[i][j].type = BlockType::air;
 								tiles[i][j].block.state = BlockState::normal;
 							}
@@ -844,7 +858,7 @@ void Board::handleFallingBlocks() {
 								tiles[i][j].block.state = BlockState::falling;
 							}
 
-							if (tiles[i - 1][j].block.state == BlockState::normal  || tiles[i-1][j].block.state == BlockState::landed || tiles[i - 1][j].block.state == BlockState::swapping || tiles[i - 1][j].block.state == BlockState::clearing)
+							if (tiles[i - 1][j].block.state == BlockState::normal || tiles[i - 1][j].block.state == BlockState::landed || tiles[i - 1][j].block.state == BlockState::swapping || tiles[i - 1][j].block.state == BlockState::clearing)
 							{
 								/*abord fall*/
 								//tiles[i][j].airLock = false;
@@ -857,11 +871,10 @@ void Board::handleFallingBlocks() {
 								//tiles[i-1][j] = tiles[i][j];
 								//tiles[i][j].type = BlockType::air;
 							}
-						//}
-						//else
-						//{
-							//tiles[i][j].fallingCounter++;
-						//}
+						}
+						else{
+							tiles[i][j].fallingCounter--;
+						}
 					}
 					else if (i <= 0)
 					{
@@ -957,7 +970,8 @@ void Board::handleMatchingBlocks(){
 				if (tiles[i][j].block.state == BlockState::normal && tiles[i][j].block.matching)
 				{
 					tiles[i][j].block.state = BlockState::matching;
-					tiles[i][j].matchingCounter = 0;
+					//tiles[i][j].matchingCounter = 0;
+					tiles[i][j].matchingCounter = BlockFlashingTime;
 					tiles[i][j].setBlockMatching(false);
 					/*
 					if (chainCounter < tiles[i][j].chainNumber)
@@ -973,9 +987,9 @@ void Board::handleMatchingBlocks(){
 			}
 			case BlockState::matching:
 			{
-				if (tiles[i][j].matchingCounter >= BlockFlashingTime)
+				if (tiles[i][j].matchingCounter <= 0)
 				{
-					tiles[i][j].matchingCounter = Tile::DEFAULT_COUNTER_VALUE;
+					tiles[i][j].matchingCounter = 0;
 					tiles[i][j].block.state = BlockState::clearing;
 					clearing = true;
 					//initClearing(pop)
@@ -984,7 +998,7 @@ void Board::handleMatchingBlocks(){
 					tiles[i][j].block.matching = false;
 				}
 				else
-					tiles[i][j].matchingCounter++;
+					tiles[i][j].matchingCounter--;
 				break;
 			}
 			case BlockState::clearing:
@@ -1027,7 +1041,6 @@ void Board::handleMatchingBlocks(){
 	{
 		chainCounter++;
 	}
-
 	comboCounter = combo;
 }
 
@@ -1252,6 +1265,7 @@ void Board::tick() {
 					 /*Blocks Falling needs to be done after matches, so that they interact on the next frame*/
 					 /*Blocks are idle for 1 frame before they can match*/
 		handleBufferRow();
+		displayBoard();
 		break;
 	}
 	default:
